@@ -1,0 +1,337 @@
+********************** THEORY ********************** 
+
+Java web applications depend upon 3 main components
+
+1) JDBC -> manages database connections
+2) Servlets -> programs that manage requests and serve to extent the functionality of a web server
+
+3) JSP (Java Server Pages) -> containing special syntax for delivering  static and dynamic contents
+
+SERVLET  ********************** 
+
+When writing a servlet program, user defined classes must extend one of two abstract classes:
+
+
+- GenericServlet
+  |-> does not allow use of doget / dopost methods 	
+
+
+- HttpServlet 
+  |-> extends GenericServlet and allows use of doget / dopost + ...  methods
+
+
+
+* Servlet is an Iterface in javax.servlet.Servlet
+|
+| -> ** GenericServlet is an abstract class that implements Servlet + 2 interfaces (javax.servlet.ServletConfig, javax.io.Serializable 					[ object can be made available in the form of binary string ])
+		|
+		|-> *** HttpServlet is an abstract class (javax.servlet.http.HttpServlet) that extends GenericServlet
+
+
+
+There are 3 Life Cycle methods in the GenericServlet interface (therefore inherited by HttpServlet) 
+
+-init    -> initialization 
+-service -> manages requests coming from user  
+-destroy -> ???
+
+
+
+********************** HOW TO CREATE A WEB APP USING NETBEANS ********************** 
+
+
+1 Create netbeans web project (includes tomcat)
+
+2 create package under "Source Packages"
+
+3 create class in package 
+
+4 imports depend on a library ( javax.servlet ) that is contained in tomcat_home/lib/servlet-api.jar
+  -- can be imported by adding it to CLASSPATH or copying it (???)
+
+example:
+
+
+		package test;
+
+		import java.io.*;
+		import javax.servlet.*;
+		import javax.servlet.annotation.WebServlet;
+		import javax.servlet.http.HttpServlet;
+
+		@WebServlet("/ciao") // -> sets url endpoint to run servlet!!! in address bar 
+
+		public class ServletProgram1 extends HttpServlet {
+		    
+		    public void init(){}
+		    
+		    public void service(ServletRequest req, ServletResponse res) throws IOException,ServletException {
+		        
+		        PrintWriter pw = res.getWriter();
+		        res.setContentType("text/html");
+		        pw.println("ciaocioa dasdas");
+		        
+		        
+		        }
+		        
+		    public void destroy(){}
+		        
+		        
+		        
+		    }
+
+
+
+Servlet  are called by means of URLS that are declared either by annotations (see above) or by means of web.xml declaration (contained in WEB-INF folder)
+
+*************************** RECEIVING DATA FROM FORM 
+
+## BASIC HTML FORM
+
+<form method="POST" action="xyz"> 
+
+Name : <input type="text" name="name">
+<input type="submit" name="Display">
+
+</form>
+
+
+## CLASS THAT TAKES DATA FROM FORM AND DISPLAYS IT BACK AS A RESPONSE 
+
+package test;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+public class DisplayServlet extends HttpServlet {
+    //METHOD TO HANDLE FORM POST REQUESTS
+    
+    public void doPost(HttpServletRequest req, HttpServletResponse res)
+    throws ServletException,IOException { 
+    
+    //USING PRINTWRITERD TO SEND DATA TO RESPONSE OBJECT AND SETTING RESPONSE CONTENT TYPE
+        PrintWriter pw = res.getWriter();
+        res.setContentType("text/html");
+        
+    //GET NAME PARAMETER FROM REQUEST     
+        String name = req.getParameter("name");
+    
+    //PRINTS IN RESPONSE    
+        pw.println("name = " + name);
+        
+    }
+}
+
+## WHAT HAPPENS?
+- welcome file is recognized in WEB.XML
+- input.html is shown, on submit returns to web.xml
+- When post request is sent to "/xyz", WEB.XML that acts as a sort of serlvet map 
+- recognizes url patter, 
+- load servlet through class specified 
+- A Request Object is created and loaded by Container
+- its parameters are accessible 
+
+
+<web-app>
+    <servlet>
+        <servlet-name>ds </servlet-name>
+        <servlet-class>test.DisplayServlet</servlet-class> -> class to be loaded
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ds</servlet-name> 
+        <url-pattern>/xyz  </url-pattern> -> url that will trigger the class loading process
+    </servlet-mapping>
+    <welcome-file-list> 
+        <welcome-file>input.html</welcome-file> <!--File that will be executed first in directory -->
+    </welcome-file-list>
+</web-app>
+
+
+## SERVLET LIFECYCLE 
+
+http://[serverip]/[deployment directory]/[url]
+
+
+1- Loading -> servlet loaded after recognition by web.xml of the [url]
+2- Instantiation -> it is automatically instantiated
+    |--> ServletConfig object is created
+3- Initialization
+  1) object is instatiated, via init method
+	|--> http request object is created
+	|--> http response object is created
+4- Request processing
+	|--> request data becomes available in request object
+	|--> instead of [service] method, [doPost] method is used
+5- Destroy
+	|--> process finishes after [doProcess] method is completed
+
+
+
+_______________________________________________________________________________
+
+## SERVLET INTERACTION WITH ONE ANOTHER:
+
+Forward and Include are two methods from the RequestDispatcher object that is already contained in the HttpServletRequest object. 
+
+- Include is used to load the contents of the specified resource (could be a Servlet, JSP, or static resource e.g. HTML files) directly into the Servlet's response, as if it were part of the calling Servlet.
+- Forward is used to redirect request from one servlet to another.  
+
+
+
+##LOGIN EXAMPLE 
+
+#MYSQL CONNECTION FACTORY 
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConnectionFactory {
+
+public static Connection connection() throws SQLException, ClassNotFoundException{
+
+    Class.forName("com.mysql.jdbc.Driver");
+    return DriverManager.getConnection("jdbc:mysql://[IP ADDRESS]/[DB NAME]", "[username]", "[password]");
+}
+    
+}
+
+*************************** LOGIN SERVLET 
+
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class LoginServlet extends HttpServlet {
+
+    public void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        PrintWriter pw = res.getWriter();
+        res.setContentType("text/html");
+
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+     
+        try {
+        	// connects to DB
+            Connection con = ConnectionFactory.connection(); 
+            //prepares statement
+            PreparedStatement ps = con.prepareStatement("select * from Login where username=? and password=?"); 
+            //binds parameters
+            ps.setString(1, username);
+            ps.setString(2, password);
+            //executes query 
+            ResultSet rs = ps.executeQuery();
+
+            //rs.next will return true or false 
+            if (rs.next()) {
+                pw.println("Login Successful");
+                //Instantiates a RequestDispatcher object available in the HttpServletRequest object, points to the url (calling the servlet) and calls the forward method
+
+                RequestDispatcher rd = req.getRequestDispatcher("dis");
+                rd.forward(req, res);
+            } //end of if
+            else {
+                pw.println("Invalid username or password");
+                //Instantiates a RequestDispatcher object available in the HttpServletRequest object, includes html file in the response
+                RequestDispatcher rd = req.getRequestDispatcher("login.html");
+                rd.include(req, res);
+            }
+
+            ps.close();
+            rs.close();
+
+        } catch (Exception ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+}
+
+
+**************************** WEB.XML with two Servlets
+
+<web-app>
+    <servlet>
+        <servlet-name>ds </servlet-name>
+        <servlet-class>test.DisplayServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ds</servlet-name>
+        <url-pattern>/dis  </url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>LoginServlet </servlet-name>
+        <servlet-class>test.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet </servlet-name>
+        <url-pattern>/xyz  </url-pattern>
+    </servlet-mapping>
+    <welcome-file-list> 
+        
+        <welcome-file>login.html</welcome-file> <!--Files that will be executed first in directory -->
+    </welcome-file-list>
+</web-app>
+
+_______________________________________________________________________________
+
+**************************** DATA ACCESS OBJECT LAYER 
+
+- Layer that manages database connections => it is the ConnectionFactory!
+
+_______________________________________________________________________________
+
+
+**************************** SERVLET CONFIGURATION
+
+Should be made in: 
+
+1) in web.xml initialization parameters can be specified with the <init-parameter> 
+
+2) retrieved using ServletConfig interface
+
+1) 
+
+<web-app>
+    <servlet>
+        <servlet-name>ds </servlet-name>
+        <servlet-class>test.DisplayServlet</servlet-class>
+        <init-param>
+            <param-name> Count</param-name>
+            <param-value> 10 </param-value>
+        </init-param>    
+            
+            
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ds</servlet-name>
+        <url-pattern>/dis  </url-pattern>
+    </servlet-mapping>
+2)
+    
+In class (not working)
+
+//    public int count; //declare variable we are going to use to contain value
+//    
+//    public void init(ServletConfig sc){
+//        count = Integer.parseInt(sc.getInitParameter("count"));
+//         
+//    }
+//    
+
+
+ 
+
+
+
+
+
+
+

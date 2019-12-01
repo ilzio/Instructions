@@ -1,0 +1,109 @@
+COMPRESS/DECOMPRESS
+
+	DECOMPRESS IN SPECIFIC FOLDER 
+	
+	tar -xzvf archive.tar.gz -C /tmp
+
+	COMPRESS ENTIRE DIRECTORY OR SINGLE FILE
+
+ 	tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
+
+	EXCLUDE DIRECTORY / FILE / TYPE OF FILE
+
+	tar -czvf archive.tar.gz /home/ubuntu --exclude=/home/ubuntu/Downloads --exclude=/home/ubuntu/.cache
+
+	tar -czvf archive.tar.gz /home/ubuntu --exclude=*.mp4
+
+	
+
+NETWORK MANAGER
+
+
+	# nmcli device wifi list
+	# nmcli device wifi connect SSID-Name password wireless-password
+
+
+
+	HOTSPOT
+
+	nmcli device wifi hotspot ifname wlp3s0 con-name saro ssid alivisumegghiudepumaiei band bg channel 11 password A1a2B3F5f_
+
+
+YOUTUBE_DL
+
+	DOWNLOAD MP3 YOUTUBE
+
+		youtube-dl --extract-audio --audio-format mp3 'URL'
+
+		youtube-dl --extract-audio --audio-format mp3 'https://youtu.be/PeKSAzEe5Mk'
+
+	SELECT VIDEO QUALITY FOR DOWNLOAD, 
+
+		1) use the -F option to list the available formats
+
+			youtube-dl -F "http://www.youtube.com/watch?v=P9pzm5b6FFY"
+	
+		2) select id of format shown previously -f id
+
+			youtube-dl -f 22 "http://www.youtube.com/watch?v=P9pzm5b6FFY"
+
+
+SSH + SCP
+
+	ssh rosa@IP (verificar)
+
+	DA COMPUTER DI DESTINAZIONE
+	
+	scp -r user@192.168.0.2:/home/user/Scrivania/dwhelper /home/user/Scrivania
+
+
+CHANGE OWNER AND PERMISSIONS FOR FOLDERS OF APACHE SERVER
+
+
+	ADDS USER REV TO WWW-DATA GROUP THAT IS THAT OF APACHE SERVER	
+	
+	sudo usermod -a -G www-data rev
+
+	CHANGES OWNER GROUP OF SPECIFIC FOLDER TO WWW-DATA THAT IS GROUP OF WEBSERVER APACHE
+	
+	sudo chgrp -R www-data /var/www/html/PhP
+
+	GIVES WRITE AND READ PERMISSIONS TO GROUP AND NOTHING TO OTHERS	
+	
+	sudo chmod -R 770 /var/www/html
+
+
+CHANGE TERMINAL TITLE IN UBUNTU 16.04 
+
+	in .bashrc:
+
+		set-title(){
+		  ORIG=$PS1
+		  TITLE="\e]2;$@\a"
+		  PS1=${ORIG}${TITLE}
+		}
+
+
+SELECTIVE DISPLAY OF NETWORKS IN WASH WITH AWK
+
+	wash -i interface | awk '($3 <= "-75") && ($6 == "RalinkTe")'	
+
+
+WIFI MONITORING 
+
+	airmon-ng check kill
+
+	monitor: 
+
+		airodump-ng INTERFACE --channel # --bssid #### -w /path/of/file/to/save/handsh.
+		
+
+	deauth:
+
+		aireplay-ng -0 # OF DEAUTH -a STATION MAC -c CLIENT MAC interface
+
+
+
+
+	
+	 

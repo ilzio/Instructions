@@ -1,0 +1,5 @@
+Curl 
+
+headers only
+curl -v -s https://DOMAINNAME.com.br 1> /dev/null
+

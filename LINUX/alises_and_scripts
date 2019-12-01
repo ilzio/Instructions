@@ -1,0 +1,40 @@
+#aliases for apache 2 folders
+
+alias html='cd /var/www/html/ && ls -l'
+alias sitav='cd /etc/apache2/sites-available/ && ls -l'
+alias siten='cd /etc/apache2/sites-enabled/ && ls -l'
+alias restartap='sudo service apache2 restart'
+
+#alias for shared folder 
+
+alias shared='cd /media/sf_SharedVM/ && ls-l'
+
+#functions for apache 2 functions
+
+siteoff () {
+    sudo a2dissite $1
+    restartap
+}
+
+siteon () {
+if [ -n "$(find /etc/apache2/sites-enabled -maxdepth 0 -type d -empty 2>/dev/null)" ]; then
+        echo "empty directory"
+        sudo a2ensite $1
+        restartap
+    
+else
+    echo "directory not empty, disable all sites? [Y/n]"
+    read response
+    if [ "$response" != "n" ]
+        then
+            echo "disabling sites..." 
+            cd /etc/apache2/sites-enabled/
+            sudo a2dissite *.conf
+            sudo a2ensite $1
+            restartap
+            
+    fi
+      sudo a2ensite $1
+      restartap
+fi
+}

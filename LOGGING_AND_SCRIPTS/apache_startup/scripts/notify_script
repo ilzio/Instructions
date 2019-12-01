@@ -1,0 +1,25 @@
+
+#!/bin/bash
+
+
+
+if  pgrep -fl inotifywait > 0 ;then
+echo "process running, leaving" >> /home/ubuntu/scripts/scriptlog
+exit 0
+
+else
+
+echo "not running, activating " >> /home/ubuntu/scripts/scriptlog
+
+while true; do
+
+inotifywait -e modify,create,delete -r /var/www/irrigamatic && \
+	    curl -X POST "CLOUDFLARE_PURGEURL" \
+         -H "X-Auth-Email: AUTH_EMAIL" \
+         -H "X-Auth-Key: AUTH_KEY" \
+         -H "Content-Type: application/json" \
+         --data '{"purge_everything":true}'
+
+done
+
+fi

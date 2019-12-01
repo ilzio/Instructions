@@ -1,0 +1,15 @@
+Channels  / Topic
+
+- sort of streams, ways to segregate updates so they go to correct clients
+
+!!NEED A SOCKET SERVER BESIDES WEBSERVER!!
+
+-webserver broadcast events to the socket server that on its turn will push it to subscribers/listening clients in form of json 
+
+- this is done by laravel echo | receives info from socket server and displays it from the page
+
+
+
+
+
+

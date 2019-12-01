@@ -1,0 +1,202 @@
+Download python script to send logs to elasticsearch 
+
+	git clone https://github.com/theMiddleBlue/modsecurity-to-elasticsearch.git
+
+As a prerequisite for elasticsearch, need to install Java 
+
+	apt install default-jre
+
+Download + install ElasticSearch
+
+Setup run on startup 
+
+	- sudo update-rc.d elasticsearch defaults 95 10
+
+Start / Stop elasticsearch 
+
+	- sudo -i service elasticsearch start / stop 
+
+Check whether ES is running -> send request to port 9200 on localhost
+
+
+See indexes in ES : http://localhost:9200/_cat/indices?v
+
+
+
+
+Configurations files 
+
+	/etc/elasticsearch/elasticsearch.yml
+	/etc/default/elasticsearch
+
+Install pip and elasticsearch trough it 
+
+	pip install elasticsearch
+
+Modify script as follows
+
+	#!/usr/bin/env python
+#
+# .====================================================.
+# | ModSecurity Audit Log to Elasticsearch             |
+# | ---------------------------------------            |
+# | Author: Andrea (theMiddle) Menin                   |
+# | Twitter: https://twitter.com/Menin_TheMiddle       |
+# | GitHub: https://github.com/theMiddleBlue           |
+# '===================================================='
+#
+
+import sys, os, getopt, json, time
+from datetime import datetime,date
+from elasticsearch import Elasticsearch
+
+# Please, check the elasticsearch URL below:
+es = Elasticsearch(['http://127.0.0.1:9200'])
+
+# parse arguments
+opts, args = getopt.getopt(sys.argv[1:],"hd:",["help","log-directory="])
+for i in opts:
+	if i[0] == "-d" or i[0] == "--log-directory":
+		basedir = i[1]
+
+# set headers name to lowercase
+def renameKeys(iterable):
+    if type(iterable) is dict:
+        for key in iterable.keys():
+            iterable[key.lower()] = iterable.pop(key)
+            if type(iterable[key.lower()]) is dict or type(iterable[key.lower()]) is list:
+                iterable[key.lower()] = renameKeys(iterable[key.lower()])
+    elif type(iterable) is list:
+        for item in iterable:
+            item = renameKeys(item)
+    return iterable
+
+# parsing...
+def parseLogFile(file):
+	# define the index mapping
+	settings = {
+		"settings": {
+			"number_of_shards": 1,
+			"number_of_replicas": 0
+		},
+		"mappings": {
+			"modsecurity": {
+				"properties": {
+					"unixts": {
+						"type": "date"
+					}
+				}
+			}
+		}
+	}
+
+	# set all dict keys to lower
+	d = renameKeys(json.load(open(file)))
+	
+	# create a unixts field as a timestamp field
+	d['transaction']['unixts'] = d['transaction']['time'][7:20].replace(':','')
+
+
+	# create 1 index per day... you could change it
+	# if you need to store all logs in a single index:
+	index = 'modsecurity_' + str(date.today()).replace('-','')
+
+	# because objects in array are not well supported,
+	# redefine all "messages" params and values in "msg"
+	new_messages = []
+	new_ruleid = []
+	new_tags = []
+	new_file = []
+	new_linenumber = []
+	new_data = []
+	new_match = []
+	new_severity = []
+
+	d['transaction']['msg'] = {}
+
+	for i in d['audit_data']['messages']:
+		teste = i.split('[')
+		x = 0
+		for i in teste:
+			teste[x] = teste[x].replace("]", "")
+			x += 1
+		
+#		print(teste[4])
+#		sys.exit()
+
+		new_messages.append(teste[4])
+		new_ruleid.append(teste[3])
+
+#		for tag in i['details']['tags']:
+#			if tag not in new_tags:
+#				new_tags.append(tag)
+
+		new_file.append(teste[1])
+		new_linenumber.append(teste[2])
+#		new_data.append(i['details']['data'])
+#		new_match.append(i['details']['match'])
+#		new_severity.append(i['details']['severity'])
+
+	d['transaction']['msg']['message'] = new_messages
+	d['transaction']['msg']['ruleid'] = new_ruleid
+#	d['transaction']['msg']['tags'] = new_tags
+	d['transaction']['msg']['file'] = new_file
+	d['transaction']['msg']['linenumber'] = new_linenumber
+#	d['transaction']['msg']['data'] = new_data
+#	d['transaction']['msg']['match'] = new_match
+#	d['transaction']['msg']['severity'] = new_severity
+
+	
+	# remove old messages list
+#	del d['audit_data']['messages']
+
+	# if index exists noop, else create it with mapping
+	if es.indices.exists(index):
+		indexexists=True
+	else:
+		es.indices.create(index=index, ignore=400, body=settings)
+
+
+	
+#	print(d)
+#	sys.exit()
+
+	# write the log
+	res = es.index(index=index, doc_type="modsecurity", body=d['transaction'])
+
+	
+	
+#	print(res['result'] == 'created'  )
+
+
+#	sys.exit()
+
+	
+	# check if log has been created
+	if res['result'] == 'created':
+		os.remove(file)
+		print "Parsed "+str(file)
+	else:
+		print "Warning: log not created:"
+		print res
+while True:
+	for root, subFolders, files in os.walk(basedir):
+		for file in files:
+			logfile = os.path.join(root, file)
+			parseLogFile(file=logfile)
+
+	print "Sleeping for a while..."
+	time.sleep(5)
+
+
+Run script 
+
+	 python /opt/modsecurity-to-elasticsearch/modsec_parser.py /usr/local/modsecurity/var/audit/
+
+If it Works:
+
+	-Download Kibana wget https://artifacts.elastic.co/downloads/kibana/kibana-6.4.2-linux-x86_64.tar.gz
+
+	- Edit config/kibana.yml and set 
+
+

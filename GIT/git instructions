@@ -1,0 +1,96 @@
+
+
+
+git instructions 
+
+list git configurations 
+	git config --list
+
+create git repository
+
+	git init
+
+add files 
+
+	git add -a
+
+check if everything has been committed 
+
+	git status
+
+	git commit 
+
+check abbreviated stats for each commit
+
+	git log --stat
+
+	specify date : git log --since=2.weeks --stat
+
+REMOTE REPOSITORIES 
+
+add
+
+	git remote add <shortname> <url>:
+
+	for ssh ssh://ubuntu@IpADDRESS/var/repo/REPONAME.git (here uses repo, not html folder!!)
+
+see info 
+
+	git remote show <shortname>
+
+retrieve data from a remote repository
+	
+	git fetch <shortname>
+
+	git pull <shortname> -> fetches data and merge into local repository
+
+pushing 
+
+	git push <remote> <branch>
+
+Renaming and Removing 
+
+	git remote rename <old name> <new name>
+
+	git remote remove <name>
+
+
+BRANCHES
+
+see all branches 
+
+	git branch
+
+see last commit for each branch 
+
+	git branch -v
+
+create 
+
+	git branch <branch name>
+
+switch to branch 
+
+	git checkout <branch name>
+
+
+create and switch to 
+
+	git checkout -b <branch name>
+
+delete 
+
+	git branch -d <branch name>
+
+merging 
+
+	git checkout master ( imagining you want to merge branch into master, but master can also be merged into branches!)
+	git merge <branch name>
+
+see where project has divergent history (last 2 weeks)
+
+ git log --since=2.weeks --oneline --decorate --graph --all
+
+
+
+

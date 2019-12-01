@@ -1,0 +1,63 @@
+In main configuration file: 
+
+ModPagespeed standby
+
+In virtualhost
+
+<IfModule pagespeed_module>
+  ModPagespeed on
+ModPagespeedRewriteLevel CoreFilters
+#CSS
+
+   ModPagespeedEnableFilters rewrite_css
+   ModPagespeedEnableFilters fallback_rewrite_css_urls
+   ModPagespeedEnableFilters flatten_css_imports
+   ModPagespeedEnableFilters inline_css
+   ModPagespeedEnableFilters move_css_to_head
+   ModPagespeedEnableFilters prioritize_critical_css
+   ModPagespeedEnableFilters move_css_above_scripts
+   ModPagespeedEnableFilters combine_css
+#JS
+
+ ModPagespeedEnableFilters combine_javascript
+ ModPagespeedEnableFilters rewrite_javascript
+#ModPagespeedEnableFilters inline_javascript
+
+#OTHER
+
+   ModPagespeedEnableFilters collapse_whitespace
+   ModPagespeedEnableFilters elide_attributes
+   ModPagespeedEnableFilters trim_urls
+   ModPagespeedEnableFilters add_head
+   ModPagespeedEnableFilters convert_meta_tags
+   ModPagespeedEnableFilters extend_cache
+   ModPagespeedEnableFilters inline_import_to_link
+   ModPagespeedEnableFilters rewrite_style_attributes_with_url
+   ModPagespeedEnableFilters convert_meta_tags
+   ModPagespeedEnableFilters hint_preload_subresources
+   ModPagespeedEnableFilters insert_dns_prefetch
+   ModPagespeedEnableFilters rewrite_domains
+
+#IMAGES
+
+   ModPagespeedEnableFilters lazyload_images
+   ModPagespeedEnableFilters responsive_images
+   ModPagespeedEnableFilters inline_images
+   ModPagespeedEnableFilters inline_preview_images
+
+   ModPagespeedEnableFilters resize_images
+   ModPagespeedEnableFilters rewrite_images
+   ModPagespeedEnableFilters convert_gif_to_png
+   ModPagespeedEnableFilters recompress_png
+   ModPagespeedEnableFilters convert_png_to_jpeg
+   ModPagespeedEnableFilters convert_jpeg_to_progressive
+   ModPagespeedEnableFilters recompress_jpeg
+   ModPagespeedEnableFilters convert_jpeg_to_webp
+   ModPagespeedEnableFilters convert_to_webp_lossless
+   ModPagespeedEnableFilters convert_to_webp_animated
+   ModPagespeedEnableFilters recompress_webp
+   ModPagespeedEnableFilters sprite_images
+   ModPagespeedEnableFilters lazyload_images
+  ModPagespeedEnableFilters resize_mobile_images
+
+</IfModule>

@@ -1,0 +1,139 @@
+*Install redux 
+
+    npm install redux react-redux --save
+
+ACTIONS
+
+* State is updated through Actions: arrow functions that return an object describing how state is to be modified 
+    *create a file called 'actions.js' and insert all actions inside, with export
+    *Action types (consts) are better contained in another separated file. 
+
+    export const INCREMENT = 'INCREMENT'
+    export const INCREMENT_BY = 'INCREMENT_BY'
+
+    export const increment = () => {
+        return{
+            type: INCREMENT
+        }
+    }
+    export const incrementBy = (payload) => {
+        return{
+            type: INCREMENT_BY
+            payload
+        }
+    }
+
+
+
+REDUCERS 
+* to tie state and actions together, we write a function called a reducer: an arrow function that takes (initial) state and action as arguments, interpret actions through switch case and returns the next state of the app. 
+
+    const counter = (state = 0, action) => {
+        switch (action.type) {
+            case "INCREMENT":
+                return state + 1
+            case "DECREMENT":
+                return state -1
+            case "INCREMENT_BY":
+                return state + action.payload
+        }
+    }
+
+
+*create a folder called reducers, 
+*create single files for each reducer, bring them together in index
+*create an index.js 
+
+    import counter from  './counter'
+    import logged from  './isLogged'
+
+    // import class that combines all reducers
+    import {combineReducers} from 'redux'
+
+    // combine them here 
+    const rootReducer = combineReducers({
+        counter, 
+        logged
+    })
+
+
+    // export all of them
+    export default rootReducer
+
+
+STORE
+
+* store is global source of truth. Store is to be initialized with combined reducers as parameter (defined above)
+
+      const store = createStore(rootReducer)
+
+In order to access store from any component: 
+    
+    import { Provider } from 'react-redux';
+
+    *wrap <App /> inside <Provider />
+
+    ReactDOM.render(
+        <Provider store={store}>
+            <App  />
+        </Provider>
+    , document.getElementById('root'));
+
+
+ACCESSING STORE IN COMPONENTS:
+
+inside functional component: 
+
+    import {useSelector, useDispatch} from 'react-redux'
+    const counter = useSelector(state => state.counter)
+    const dispatch = useDispatch()
+    dispatch(increment())
+
+inside CLASS component
+
+    *import action from './action/actions.js'
+
+*at the end of the class:
+
+    const mapStateToProps = state => {
+        return {
+            propName: state.propName
+        };
+    };
+    
+
+    const mapDispatchToProps = {
+        dispatchName: dispatchName[action creator imported above]
+    };
+
+    export default connect(mapStateToProps, mapDispatchToProps)(ClassName);
+
+*can be used inside class just like any other prop 
+
+    this.props.propName
+    this.props.dispatchName
+
+
+IN THE CASE IN WHICH STATE IS NOT NECESSARY, ONLY NEED TO DISPATCH 
+
+    export default connect(
+        null,
+        {
+        dispatchName: dispatchName
+        }
+    )(ClassName);
+
+*******************************************************************************
+
+mapStateToProps is actually a function which takes the entire state of our app as its first argument and returns an object of data that our component will need, i.e. the first parameter is equivalent to store.getState() .
+
+mapStateToProps takes an optional second argument, which lets you use some of the component props.
+
+mapDispatchToProps used for mapping (injecting) action creators to the component’s props.
+
+mapDispatchToProps can actually be either an object or a function. The official React Redux documentation recommends it to be an object and to be fairly honest, most of the time that’s what you’ll go with.
+
+
+    https://medium.com/javascript-in-plain-english/the-only-introduction-to-redux-and-react-redux-youll-ever-need-8ce5da9e53c6
+
+********************************************************************************

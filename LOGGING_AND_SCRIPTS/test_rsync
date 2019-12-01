@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+
+while true; 
+do
+ rsync -avz -e "ssh -i /var/log/apache2/access.log ubuntu@IPADDRESS:/home/ubuntu/test_rsync
+
+done

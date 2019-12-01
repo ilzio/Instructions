@@ -1,0 +1,1 @@
+In order to have scrollable container of fixed heigt, container has max height and overflow-x = auto

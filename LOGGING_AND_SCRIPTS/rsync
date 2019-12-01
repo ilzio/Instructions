@@ -1,0 +1,7 @@
+rsync -zvhra /origin/path /destination/path
+
+parameters:
+-z compact files
+-r recursive copies, does not keep symlinks
+-a recursive, keeps symlinks, permissions, timestamps
+-h output human friendly

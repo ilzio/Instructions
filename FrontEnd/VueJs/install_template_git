@@ -1,0 +1,6 @@
+INSTALL VUE TEMPLATE FROM GIT 
+
+clone repo 
+npm install
+npm audit fix 
+npm run dev 

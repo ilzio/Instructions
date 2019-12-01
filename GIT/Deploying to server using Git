@@ -1,0 +1,50 @@
+Deploying to server using Git 
+
+INSIDE SERVER:
+
+	mkdir /var/repo && cd repo
+
+	mkdir [repo_name].git && cd [repo_name].git
+
+	git init --bare 
+
+HOOKS - post-receive after all files have been transferred, 
+
+	cd hooks 
+
+	sudo vim post-receive 
+
+contents:
+
+	#!/bin/bash
+
+	git --work-tree=/var/www/html/[repo_name]/ --git-dir=/var/repo/[repo_name].git checkout -f
+
+add execution permissions 
+
+	sudo chmod +x post-receive                                                                                              
+
+
+LOCAL COMPUTER (git folder already initialized by default in laravel )
+
+in order to use private key auth 
+
+create ~/.ssh/config and inside it:
+
+	Host [IP ADDRESS]
+	User ubuntu 
+	IdentityFile ~/.ssh/web.pem
+
+
+cd /var/www/html/laravel-2fa
+
+create a branch called production and point to the repository folder (not the webserver folder - note syntax for ssh access)
+
+	git remote add staging ssh://ubuntu@[IP]/var/repo/[repo_name].git
+
+see remote repositories 
+
+	git remote -v
+
+
+

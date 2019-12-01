@@ -1,0 +1,80 @@
+FOLLOWING 
+
+https://learnku.com/articles/29394
+
+1) create folder called "template in" resources
+2) copy content of folder /src/ (in vue template) into "template" folder
+
+3) add following lines to webpack.mix.js
+
+	mix.js('resources/backend/main.js', 'public/js')
+
+3 if problem with @ add following lines to webpack.mix.js
+
+	mix.webpackConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'resources/backend'),
+    },
+  },
+})
+
+
+4) if npm run dev stops at 70%
+
+	 npm install babel-plugin-dynamic-import-node --save-dev
+
+5) and in webpack.mix.js add
+
+	.babelConfig({
+  plugins: ['dynamic-import-node']
+});
+
+6) if /deep/ problem 
+
+search all occurencies of /deep/ in project folder and replace with >>>
+
+7) configure bable accordingly
+
+modify /var/www/html/sancipriano/node_modules/laravel-mix/src/BabelConfig.js according to babel.config.js from vue template folder
+
+presets: [
+               
+                   
+                    '@vue/app'
+                
+            ], 
+
+
+8) as only route in /routes/web.php leave
+
+Route::get('/{any}', 'SinglePageController@index')->where('any', '.*');
+
+9) create controller 
+
+php artisan make:controller SinglePageController
+
+10) create method in controller as follows
+
+	 public function index() {
+    return view('admin');
+
+11) create admin view and paste code as follows
+
+<!doctype html>
+<html lang="{{ app()->getLocale() }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>title</title>
+</head>
+<body>
+<div id="app"></div>
+<script src="{{ mix('/js/main.js') }}"></script>
+</body>
+</html>
+
+
+

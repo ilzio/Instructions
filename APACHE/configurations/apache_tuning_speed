@@ -1,0 +1,94 @@
+Apache2 tuning for speed 
+
+1. DISABLE UNNECESSARY MODULES
+
+	to see loaded modules sudo apache2ctl -M 
+	safe to disable: server_status (sudo a2dismod status)
+
+2. CACHING 
+
+PREVIOUS STEPS - especially on fresh install 
+
+	sudo apt-get install apache2-utils
+	
+	sudo a2enmod cache
+	sudo a2enmod cache_disk
+	sudo a2enmod expires
+	sudo a2enmod headers
+	
+
+
+	a) use memcache with pagespeed - SERVER RAM IS USED FOR CACHING (it is not mod_socache_memcache!!!)
+		
+		sudo apt install memcached 
+
+		to verify status and check for door listening 
+		
+			netstat -tap | grep memcached
+
+		in /etc/apache2/mods-available/pagespeed.conf uncomment 
+
+			# ModPagespeedMemcachedServers localhost:11211
+
+		and in case of high memory server also uncomment 
+
+			# ModPagespeedMemcachedServers localhost:11211
+
+		statistics from memcached are available at 
+		
+			echo stats | nc 127.0.0.1 11211
+
+
+
+b) Use mod_disk_cache instead of mod_mem_cache
+
+1)
+	uninstall memcached (if installed)
+
+	sudo a2enmod cache_disk 
+	sudo service apache-htcacheclean start
+
+2) enable module expires
+
+	sudo a2enmod expires
+
+	in virtualhost add:
+
+	<IfModule mod_expires.c>
+		ExpiresActive On
+		ExpiresDefault "access plus 1 day"
+		ExpiresByType image/jpg "access plus 5 days"
+		ExpiresByType image/jpeg "access plus 5 days"
+		ExpiresByType image/gif "access plus 5 days"
+		ExpiresByType image/png "access plus 5 days"
+		ExpiresByType text/css "access plus 1 month"
+		ExpiresByType application/pdf "access plus 1 month"
+		ExpiresByType text/x-javascript "access plus 1 month"
+		ExpiresByType application/x-shockwave-flash "access plus 1 month"
+		ExpiresByType image/x-icon "access plus 1 year"
+	</IfModule>
+
+
+	
+
+
+3) in /etc/apache2/mods-available/cache_disk.conf    set:
+
+  CacheDirLength=2 
+  CacheDirLevels=1
+
+ 
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+

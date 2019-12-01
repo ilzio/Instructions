@@ -1,0 +1,73 @@
+PROMISES IN JAVASCRIPT 
+
+//a basic promise is that called when calling an event
+
+//define an image and an event that has to be fired as it is loaded
+//here the function is the callback, anonimous function
+
+	var img = document.querySelector('.img').
+
+	img.addEventListener('load', function(){
+	  console.log('image has been loaded')
+	})
+
+	img1.addEventListener('error', function() {
+	  console.log('error loading image')
+	});
+
+//PROMISES CONSTRUCTOR 
+- takes one argument, a callback, with two parameters:
+1) resolve
+2) reject
+
+var promise = new Promise(function(resolve, reject) {
+  // do a thing, possibly async, then…
+
+  if (/* everything turned out fine */) {
+    resolve("Stuff worked!");
+  }
+  else {
+    reject(Error("It broke"));
+  }
+});
+
+//USE PROMISE
+
+promise.then(function(result) {
+  console.log(result); // "Stuff worked!"
+}, function(err) {
+  console.log(err); // Error: "It broke"
+});
+
+//EXAMPLE = INCLUDE JQUERY VIA PROMISE 
+
+var promise = new Promise(function(resolve, reject){
+  script = document.createElement('script');
+  script.src = "http://code.jquery.com/jquery-3.3.1.min.js";
+  document.body.appendChild(script);
+  script.onload = function (){
+
+  if(window.jQuery){
+    return resolve('loaded')
+  } else {
+   return reject(Error('not loaded'));
+
+  } 
+  }
+
+
+ }); 
+
+  
+  promise.then(function(result) {
+  console.log(result); // "Stuff worked!"
+}, function(err) {
+  console.log(err); // Error: "It broke"
+});
+
+
+//EXAMPLE retrieve data from get request
+
+
+
+

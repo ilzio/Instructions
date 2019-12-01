@@ -1,0 +1,85 @@
+Curso de Pentest Web (24/09/2018)
+
+Agenda:
+    -OWASP/Sans
+    -Conceitos básicos
+    -Basic Authentication
+    -Digest Authentication
+    -Etapas do Pentest
+    -SQLi inicial básico
+
+
+•https://www.owasp.org/index.php/Main_Page
+•http://www.webappsec.org/
+•http://cwe.mitre.org/top25/index.html
+•https://www.sans.org/top25-software-errors
+
+Conceitos básicos:
+    Três itens abaixo tem conceitos diferentes
+•Encoding binário, decimal, base64, utf8
+•Hash sha1, md5, sha256
+•Criptografia AES256, RSA,...
+
+Hash tem um conceito de não ser reversível, é recuperado hoje por força bruta ou bases processadas
+crackstation.net
+
+Basic Authentication:
+•Client request protectes content
+•Server request username:password
+•Client sends username:password
+•Server returns content
+
+username:password são transportados em base64
+
+Digest Authentication
+•https://www.w3.org/Protocols/HTTP/Issues/digest-authentication.html
+•https://tools.ietf.org/html/rfc2617
+
+Etapas do Pentest
+•4 steps:
+1.Reconnaissance
+
+
+-chrome developer tools (ctrl+shift+i)->network
+        -> a requisição mostra informaço?s do servidor 
+
+-robots.txt 
+        ->indica quais paginas nao devem ser indexadas
+-sitemap.xml
+
+SQL injection exemplo: 
+
+username: admin' or 1 = 1-- 
+
+SELECT id FROM users WHERE username = 'admin ' OR ''=' and password = sha1('senha')
+
+tambem 
+ 'admin ' OR ''' 
+
+0x61646d696e or 1=1
+0x61646d696e --
+
+
+
+
+
+2.Mapping
+3.Discovery
+4.Exploitation
+
+
+http://172.16.0.144/login.php
+
+select id from users  where username = INJECTION and password = YYY
+-está com filtro de uma aspa '
+
+
+
+
+
+SELECT id FROM users WHERE username = '$_POST['username']' and password = sha1('$_POST['password'])
+
+
+SELECT id FROM users WHERE username = 'diversão' and password = sha1('senha')
+
+SELECT id FROM users WHERE username = 'admin ' OR ''=' and password = sha1('senha')

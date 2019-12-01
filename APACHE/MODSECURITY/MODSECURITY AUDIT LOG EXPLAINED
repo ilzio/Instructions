@@ -1,0 +1,19 @@
+MODSECURITY AUDIT LOG EXPLAINED
+
+A	Audit log header (mandatory)
+B	Request headers
+C	Request body
+D	Reserved
+E	Response body
+F	Response headers
+G	Reserved
+H	Audit log trailer, which contains additional data
+I	Compact request body alternative (to part C), which excludes files
+J	Information on uploaded files
+K	Contains a list of all rules that matched for the transaction
+Z	Final boundary (mandatory)
+
+
+AUDIT LOG HEADER SECTION 
+
+[Date and time], UNIQUE ID of the transaction, SOURCE IP, SOURCE PORT, DESTINATION IP, DESTINATION PORT

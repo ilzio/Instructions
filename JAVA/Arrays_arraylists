@@ -1,0 +1,35 @@
+ARRAYS, ARRAYLISTS, LISTS
+
+//arrays primitivos (guardam valores) 
+        
+    //declaraçao -> precisa definir numero fixo de posiçoes, não podem ser alterados 
+	    int[] numeriACazzo = new int[10];
+	    int[] numerosAMinchia = {1, 2, 4, 5};
+	    int saro[] = numerosAMinchia.clone();
+    
+    //Atribuçao dados 
+    	    numeriACazzo[0] = 10;
+    //Get Dados;
+        int fd = numeriACazzo[0];
+    //Ver Tamanho
+	    int fse= numerosAMinchia.length;
+        
+//ARRAY LISTS
+    //declação = ArrayList<tipo> nome = new ArrayList<>() 
+    //numero de elementos pode ser definido in advance mas não é obrigatorio. 
+    ArrayList<Integer> myList = new ArrayList<>();
+    ArrayList<Pessoa> pessoas = new ArrayList<>();
+    ArrayList<Pessoa> pessoas1 = new ArrayList<>(26);
+
+	//Atribuçao dados
+		pessoas.add(p[3]) //adds p3 at the end of list
+	    pessoas.add(0, p[1]); //atribui p1 para indice numerico 0
+    //Get Dados;
+    	pessoas.get(numeric index); //pegar valor de um indice x;
+    
+    //ver tamanho de arraylists size!
+        pessoas.size();
+
+    //eliminar elemento
+        pessoas.remove(numeric index);
+                

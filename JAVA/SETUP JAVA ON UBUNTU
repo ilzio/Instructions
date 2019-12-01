@@ -1,0 +1,18 @@
+SETUP JAVA ON UBUNTU 
+
+1) Donwload and install java from apt 
+
+	apt install openjdk-8-jdk
+
+2) If multiple versions of java installed run sudo update-alternatives --config java and select desired version 
+
+3) Copy installation path and add to /etc/environment:
+
+	JAVA_HOME="[INSTALLATION PATH]"
+
+4) Verify with echo $JAVA_HOME
+
+
+
+
+

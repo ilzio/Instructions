@@ -1,0 +1,17 @@
+MODSECURITY LOGGING:
+
+1 - to know how many times rule has been triggered execute: 
+
+	grep ModSecurity /var/log/apache2/error.log.1 | sed -e 's#^.*\[id "\([0-9]*\).*hostname "\([a-z0-9\-\_\.]*\)"\].*uri "#\1 \2 #' | cut -d\" -f1 | sort -n | uniq -c | sort -n
+
+this will show 
+ - number of time rule has been triggered 
+ - ID of the rule triggered
+ - ip and uri of last trigger 
+
+ ex: 1682 9142050 172.16.0.73 /login
+
+Rule can be removed by ID 
+
+- echo "SecRuleRemoveById 9142050" 
+

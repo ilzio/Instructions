@@ -1,0 +1,30 @@
+There are two scripts 
+
+1) notify_script -> checks whether inotifywait is still running
+	- if it does, exits
+	- if not, starts listening for change in desired folders and logs messages in log file
+
+2) kill_all -> checks whether inotifywait is running
+	- if it does, checks if notify_script is running. If true kills both 
+	- if it doesn't, exits. 
+
+
+3) check how apache2 is started. Run 
+
+service apache2 status
+
+a) case ExecStop=/etc/init.d/apache2 stop
+
+
+	In /etc/init.d/apache2 startup file,  call to scripts are to be included in 
+
+	do_start() / do_stop / do_reload() 
+
+
+b)  case ExecStop=/usr/sbin/apachectl
+
+	in /usr/sbin/apachectl, calls to script are to be included in 
+
+	start)
+	restart|graceful)
+	stop|graceful-stop)

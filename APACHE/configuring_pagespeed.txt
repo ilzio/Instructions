@@ -1,0 +1,95 @@
+Introductory notes: 
+
+1) inline css vs combine css / inline js vc combine js
+- inline css makes page load time faster but if css is large and does not change across pages, combine css is to be preferred because it allows the browser to cache it and render navigation faster across pages 
+
+2) Combining inline css (that is already included in CoreFilters) and outline css does not make sense
+
+3) 'Move CSS Above Scripts' does not make sense if no css after scripts
+
+5) "rewrite" css + js means minify files
+
+#### In order to enable it only for selected virtualhosts:
+
+1) In main configuration file: 
+
+	ModPagespeed standby
+
+2)In virtualhost [just an example, every situation needs tweaking and fine-tuning]
+
+<IfModule pagespeed_module>
+
+  ModPagespeed on
+  ModPagespeedRewriteLevel CoreFilters
+
+#Corefilters are :
+#   add_head
+#   combine_css
+#   combine_javascript
+#   convert_meta_tags
+#   extend_cache
+#   fallback_rewrite_css_urls
+#   flatten_css_imports
+#   inline_css
+#   inline_import_to_link
+#   inline_javascript
+#   rewrite_css
+#   rewrite_images
+#   rewrite_javascript
+#   rewrite_style_attributes_with_url
+
+#CSS
+   
+#   ModPagespeedEnableFilters outline_css
+   ModPagespeedEnableFilters move_css_to_head
+   ModPagespeedEnableFilters prioritize_critical_css
+#   ModPagespeedEnableFilters move_css_above_scripts
+
+
+#OTHER
+
+   ModPagespeedEnableFilters insert_dns_prefetch
+
+
+   ModPagespeedEnableFilters collapse_whitespace
+   ModPagespeedEnableFilters elide_attributes
+   ModPagespeedEnableFilters trim_urls
+   ModPagespeedEnableFilters hint_preload_subresources
+   ModPagespeedEnableFilters insert_dns_prefetch
+   ModPagespeedEnableFilters rewrite_domains
+
+#IMAGES
+   ModPagespeedEnableFilters recompress_images
+   ModPagespeedEnableFilters responsive_images
+   ModPagespeedEnableFilters recompress_png
+   ModPagespeedEnableFilters recompress_jpeg
+   ModPagespeedEnableFilters recompress_webp
+#   ModPagespeedEnableFilters jpeg_subsampling
+
+   ModPagespeedEnableFilters inline_images
+   ModPagespeedEnableFilters inline_preview_images
+   ModPagespeedEnableFilters resize_images
+#   ModPagespeedEnableFilters convert_gif_to_png
+
+   ModPagespeedEnableFilters convert_png_to_jpeg
+   ModPagespeedEnableFilters convert_jpeg_to_progressive
+   ModPagespeedEnableFilters convert_jpeg_to_webp
+   ModPagespeedEnableFilters convert_to_webp_lossless
+#   ModPagespeedEnableFilters convert_to_webp_animated
+
+
+   ModPagespeedEnableFilters sprite_images
+   ModPagespeedEnableFilters lazyload_images
+   ModPagespeedEnableFilters resize_mobile_images
+
+
+#DISABLED 
+
+#	ModPagespeedDisableFilters combine_javascript
+
+#this allows to exclude a specific js/other file from being rewritten and combined by pagespeed. 
+#the idea is that small scripts can be served later on page load if they are not part of unique js file created by pagespeed.
+#	ModPagespeedDisallow "*/jquery-ui-1.8.2.custom.min.js"
+
+</IfModule>
+	

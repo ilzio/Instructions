@@ -1,0 +1,51 @@
+function LoadCss() {
+    var css = ['https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css', '/css/leaflet.min.css', '/css/leaflet-gesture-handling.min.css'];
+    for (x in css) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = css[x];
+        link.type = 'text/css';
+        document.body.appendChild(link);
+    }
+}
+
+function LoadScripts() {
+    var _scripts = ['https://code.jquery.com/jquery-3.3.1.min.js', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', '/js/jquery.waypoints.min.js', '/js/jquery.stellar.min.js', '/js/main.js', '/js/leaflet.min.js', '/js/leaflet-gesture-handling.min.js', ];
+    LoadScriptsSync(_scripts);
+}
+
+function LoadScriptsSync(_scripts) {
+    var x = 0;
+    var loopArray = function(_scripts) {
+        loadScript(_scripts[x], function() {
+            x++;
+            if (x < _scripts.length) {
+                loopArray(_scripts);
+            };
+        });
+    };
+    loopArray(_scripts);
+}
+
+function loadScript(src, callback) {
+    script = document.createElement('script');
+    script.onerror = function() {
+        console.log(src + 'Error to handle');
+    };
+    script.onload = function() {
+        console.log(src + ' loaded ');
+        callback();
+    };
+    script.src = src;
+    document.body.appendChild(script);
+}
+if (window.addEventListener) {
+    window.addEventListener("load", LoadScripts, false);
+    window.addEventListener("load", LoadCss, false);
+} else if (window.attachEvent) {
+    window.attachEvent("onload", LoadScripts);
+    window.attachEvent("onload", LoadCss);
+} else {
+    window.onload = LoadScripts;
+    window.onload = LoadCss;
+}

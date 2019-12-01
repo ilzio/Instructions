@@ -1,0 +1,24 @@
+
+#!/bin/bash
+
+if  pgrep -fl inotifywait > 0 ;then
+	echo "inotifywait is running, killing" >> /home/ubuntu/scripts/scriptlog
+	if pgrep -fl notify_script > 0;then 
+		echo "notify script is running, killing" >> /home/ubuntu/scripts/scriptlog
+		 kill $(pgrep -fl notify_script)
+		 kill $(pgrep -fl inotifywait)
+
+		echo "killing everything" >> /home/ubuntu/scripts/scriptlog
+
+
+		exit 0
+	else
+	echo "notify_script is not running" >> /home/ubuntu/scripts/scriptlog
+
+	fi 
+
+else
+
+	echo "inotifywait not running, leaving" >> /home/ubuntu/scripts/scriptlog
+
+fi

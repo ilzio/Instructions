@@ -1,0 +1,12 @@
+<web-app>  <!-- ROOT TAG  -->
+	<!-- THIS FIRST PART DEFINES THE SERVLET  -->
+	<servlet>
+		<servlet-name>date</servlet-name> <!-- LOGICAL NAME MATCHIN...  -->
+		<servlet-class>com.nt.servlet.DateServlet</servlet-class>
+	</servlet>
+	<!-- THIS FIRST PART DEFINES THE SERVLET MAPPING  -->
+	<servlet-mapping>
+		<servlet-name>date</servlet-name> <!-- ... LOGICAL NAME MATCHING  -->
+		<url-pattern>/test1</url-pattern>  <!-- ... always starting with "/" can be everything  -->
+	</servlet-mapping>
+</web-app>

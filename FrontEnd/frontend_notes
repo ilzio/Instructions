@@ -1,0 +1,28 @@
+Frontend notes
+
+<meta name="viewport" content="width=device-width, initial-scale=1""> sets viewport to the width of the device + establish a 1:1 relationship between CSS pixels and device-independent pixels.
+ If then body width is set to 100%, body will take the full width of device screen 
+
+Chrome dev-tool
+to analyse time consumed in layout renderization, go to performace -> event log -> select rendering only
+
+Best Practices 
+
+CSS
+- assign classes to each element, preferably by constructing sub-elements to be styled independently 
+	es: div.carousel-wrapper > div.carousel.inner >div.carousel-slide. 
+- make sure to leverage inheritance of attributes and avoid complex selectors that will result in increased work by the browser es: nth.child, complex :not selectors 
+
+@media queries 
+
+* max-width / min-width refer to the size of the browser window not the device
+* use percentages over fixed px dimensions
+* always from smaller to bigger values in cascading css files min-width: 992; min-width: 768; ... 
+
+HTML
+
+- minify html and compress 
+
+JS 
+
+- inline javascript increases speed when chunks of code are critical for execution but blocks parsing, async loading allows parsing to take place undisturbed 

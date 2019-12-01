@@ -1,0 +1,46 @@
+create config file with login credentials for mysql ex;
+
+	vim /home/$USERNAME/.mysql_login.cnf.mysql_login.cnf
+
+CONTENT:
+
+	[client]
+	user = test
+	password = test
+
+
+create a script.sh, give execution permission, insert into it the command for dump
+
+	mysqldump --defaults-extra-file=/home/$USERNAME/.mysql_login.cnf  -u test --databases  test > /home/$USERNAME/Desktop/test_DB_backup_$(date +%d-%m-%Y_%H-%M-%S).sql 
+
+setting up in cron 
+
+crontab -e 
+
+0 * * * *  /home/$USERNAME/Desktop/backup.sh  (this is done every hour at *:00 - use https://crontab.guru/) 
+
+LARAVEL 
+
+in cron (every minute)
+
+	* * * * * cd /var/www/html/laravel && php artisan schedule:run >> /dev/null 2>&1
+
+SCHEDULING A TAST 
+
+in App\Console\Kernel there is a schedule method
+
+
+protected function schedule(Schedule $schedule)
+    {
+        $schedule->call(function () {
+            DB::table('recent_users')->delete();
+        })->daily();
+    }
+
+
+
+
+
+
+	
+

@@ -1,0 +1,93 @@
+IMPLEMENTING SELF SIGNED SSL CERTIFICATE 
+
+
+Generate public key 
+
+	openssl genrsa -des3 -out server.key 1024 
+
+	->will ask for a password
+
+Generate CSR
+
+	openssl req -new -key server.key -out server.csr
+
+Remove password from server Key:
+
+	cp server.key server.key.org
+
+	openssl rsa -in server.key.org -out server.key
+
+generate the certificate:
+
+	openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
+copy them to server via scp
+
+	 scp -i /home/$USERNAME/Desktop/conex/web.pem server.key ubuntu@[IP ADDRESS]:/home/ubuntu/temp
+
+move them to created apache directory
+
+
+	sudo mkdir /etc/apache2/ssl
+
+	sudo cp server.crt /etc/apache2/ssl/server.crt
+
+	sudo cp server.key /etc/apache2/ssl/server.key
+
+ensure that Apache2 is using mod_ssl.so:
+
+	sudo a2enmod ssl
+
+create symbolic link for default-ssl file 
+
+	sudo ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/000-default-ssl.conf
+
+edit the 000-default-ssl.conf file we just created. Open the file with the command sudo nano /etc/apache2/sites-enabled/000-default-ssl.conf. Look for the following lines:
+
+	SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+
+	SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+	And change them to:
+
+	SSLCertificateFile /etc/apache2/ssl/server.crt
+
+	SSLCertificateKeyFile /etc/apache2/ssl/server.key
+
+RESTART APACHE2
+
+#########################################################################
+
+Server Side Configurations : FORCE HTTPS REDIRECT 
+
+<VirtualHost *:80>
+
+ServerName NAME
+
+Redirect permanent / https://URL
+
+</VirtualHost>
+
+
+<VirtualHost *:443>
+ ServerName NAME
+ServerAdmin ninguem@NAME.com
+ DocumentRoot /var/www/html/
+SSLEngine on
+SSLCertificateFile /etc/apache2/ssl/server.crt
+SSLCertificateKeyFile /etc/apache2/ssl/server.key
+<Directory /var/www/html/Painel/laravel-2fa/public>
+ AllowOverride All
+ </Directory>
+ErrorLog ${APACHE_LOG_DIR}/error.log
+ CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+
+test configuration file:
+
+	apache2ctl configtest
+
+RESTART APACHE2
+
+#########################################################################

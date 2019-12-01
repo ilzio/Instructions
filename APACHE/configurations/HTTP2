@@ -1,0 +1,28 @@
+HTTP2
+
+prerequisites 
+
+* needs apache 2.4.24 (verify with apache2 -v) 
+* PHP FPM
+
+	in case in which  NPM Prefork is used run:
+		
+		sudo apt-get install php7.2-fpm
+		sudo a2enmod proxy_fcgi
+		sudo a2enconf php7.2-fpm
+		sudo a2dismod php7.2
+		sudo a2dismod mpm_prefork
+		sudo a2enmod mpm_event
+		sudo service apache2 restart
+
+process
+
+	sudo a2enmod http2
+
+in virtualhost include 
+
+	Protocols h2 http/1.1
+
+or for global in apache2.conf
+
+	Protocols h2 h2c http/1.1

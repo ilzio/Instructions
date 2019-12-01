@@ -1,0 +1,205 @@
+ENVIRONMENT VARIABLES
+
+1.0 Variaveis de ambiente
+
+type (comando para saber se as informações do comando digitado)
+type comando
+shell builtin = comando interno
+hashed = está em cache interno dos sistema = comando externo
+se ele der o caminho /bin/aleatorio é pq ele é um comando externo 
+
+1.1 Declarar variavel de ambiente
+	NOMEVARIAVEL=valor 
+	teste=/home
+	export teste=/home (já cria a variavel exportada)
+
+	env nomevariavel=valorvariavel ./script (seta o valor da variável apenas para a execução do script)
+	unset variável (retira o valor dado pelo env)
+
+
+O comando EXPORT nome_variavel = exporta a variavel para a "raiz" do processo pai do shell e se abrir outro shell como filho e só funciona a partir do shell pai, a variavel estara válida,
+mas se abrir outro terminal não, pois não exportou em modo global para a pasta dos binarios
+
+set (comando interno que mostra todas as variaveis locais do usuario e shell , globais)
+env (comando externo que mostra as variaveis que são globais)
+
+1.2 Variáveis pré-definidas
+
+É são setadas no kernel, as importantes são, digite env para ver:
+	HISTFILE=(arquivo de histórico do linux)
+	HISTFILEZILE= qual tamanho maximo do arquivo
+	HISTSIZE= quantidade de linhas maximas do arquivo
+	HOME= (home do usuario local)
+	LOGNAME= Nome do usuário que fez login na sessão (USER= mostra o nome do usuário)
+	$PATH = quais diretorios o shell deve consultar para encontrar comandos externos
+	PWD= diretorio que está no momento
+	SHELL = tipo de shell
+	TERM= mostra o tipo de terminal entre tty e xterm (xterm= interface gráfica)
+
+
+Para ver as variaveis = echo $VARIAVEL 
+
+	echo $$ = mostra o PID do shell atual 
+	echo $! = mostra o ultimo PID do processo que executou em background 
+	echo ? = mostra o codigo de retorno do ultimo processo que executou se o resultado for 0 = sucesso codigo de retorno diferente de 0 é considerado um erro
+	echo ~ = mostra a home do usuário
+	echo ~nomeusuario = home do usuario digitado
+
+
+1.3 Comandos sequenciais
+
+	Usando ; = executa sequencialmente
+	date ; ls ; free 
+	Usando & = abre outro processo fora do shell e executa, pode fechar o shell que o processo berto continuara funcionando
+	Usando &&  = executa o comando o segundo comando se o primeiro for executado com sucesso
+	ls && free
+	usando || = executa o segundo comando se o primeiro der errado 
+	ls || free
+	!! = repete o ultimo comando executado
+	!numero = numero do comando que tem no history para executar
+	!string = executa o ultimo coando contendo o texto
+	history -c = limpa todo o history
+	uname -a = mostra informações do sistema 
+	alias lk=’comando’ | alias é um apelido para outro comando por exemplo é temporario no bash atual
+
+
+Run program with debug information
+
+	env G_MESSAGES_DEBUG="all" diodon
+
+COMPRESS/DECOMPRESS
+
+	Galo Cego, [04.02.19 10:43]
+
+	tar -zxvf teste.tar.gz  -C /var     (descompata tudo dentro do diretorio)
+	tar -zxvf arquivo.tar.gz arquivo    (descompatar apenas este arquivo no diretorio atual)
+
+	tar -tzvf teste.tar.gz (lista tudo)
+	tar -tzvf teste.tar.gz |grep arquivo (lista arquivo )
+
+	tar -zxvf arquivo.tar.gz  -C caminho/pasta arquivo (descompata arquivo dentro do diretorio escolhido)
+
+	Galo Cego, [04.02.19 10:43]
+	c – cria um novo arquivo tar;
+	-M – cria, lista ou extrai um arquivo multivolume;
+	-p – mantém as permissões originais do(s) arquivo(s);
+	-r – acrescenta arquivos a um arquivo tar;
+	-t – exibe o conteúdo de um arquivo tar;
+	-v – exibe detalhes da operação;
+	-w – pede confirmação antes de cada ação;
+	-x – extrai arquivos de um arquivo tar;
+	-z – comprime ou extrai arquivos tar resultante com o gzip;
+	-j – comprime ou extrai arquivos tar resultante com o bz2;
+	-f – especifica o arquivo tar a ser usado;
+	-C – especifica o diretório dos arquivos a serem armazenados.
+
+	DECOMPRESS IN SPECIFIC FOLDER 
+	
+	tar -xzvf archive.tar.gz -C /tmp
+
+	COMPRESS ENTIRE DIRECTORY OR SINGLE FILE
+
+ 	tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
+
+	EXCLUDE DIRECTORY / FILE / TYPE OF FILE
+
+	tar -czvf archive.tar.gz /home/ubuntu --exclude=/home/ubuntu/Downloads --exclude=/home/ubuntu/.cache
+
+	tar -czvf archive.tar.gz /home/ubuntu --exclude=*.mp4
+
+	EXTRACT SPECIFIC FILE TO SPECIFIC FOLDER
+
+	tar xvf test.tar -C anotherDirectory/ testfile1
+
+	
+
+
+NETWORK MANAGER
+
+
+	# nmcli device wifi list
+	# nmcli device wifi connect SSID-Name password wireless-password
+
+	HOTSPOT
+
+	nmcli device wifi hotspot ifname INTERFACE_NAME con-name CONNECTION_NAME ssid SSID_NAME band bg channel CHANNEL# password PASSWORD
+
+
+YOUTUBE_DL
+
+	DOWNLOAD MP3 YOUTUBE
+
+		youtube-dl --extract-audio --audio-format mp3 'URL'
+
+		youtube-dl --extract-audio --audio-format mp3 'https://youtu.be/PeKSAzEe5Mk'
+
+	SELECT VIDEO QUALITY FOR DOWNLOAD, 
+
+		1) use the -F option to list the available formats
+
+			youtube-dl -F "http://www.youtube.com/watch?v=P9pzm5b6FFY"
+	
+		2) select id of format shown previously -f id
+
+			youtube-dl -f 22 "http://www.youtube.com/watch?v=P9pzm5b6FFY"
+
+
+SSH + SCP
+
+	ssh USERNAME@IP (verificar)
+
+	DA COMPUTER DI DESTINAZIONE
+	
+	scp -r user@IP_ADDRESS:/home/user/Scrivania/dwhelper /home/user/Scrivania
+
+
+CHANGE OWNER AND PERMISSIONS FOR FOLDERS OF APACHE SERVER
+
+
+	ADDS USER REV TO WWW-DATA GROUP THAT IS THAT OF APACHE SERVER	
+	
+	sudo usermod -a -G www-data rev
+
+	CHANGES OWNER GROUP OF SPECIFIC FOLDER TO WWW-DATA THAT IS GROUP OF WEBSERVER APACHE
+	
+	sudo chgrp -R www-data /var/www/html/PhP
+
+	GIVES WRITE AND READ PERMISSIONS TO GROUP AND NOTHING TO OTHERS	
+	
+	sudo chmod -R 770 /var/www/html
+
+
+CHANGE TERMINAL TITLE IN UBUNTU 16.04 
+
+	in .bashrc:
+
+		set-title(){
+		  ORIG=$PS1
+		  TITLE="\e]2;$@\a"
+		  PS1=${ORIG}${TITLE}
+		}
+
+
+SELECTIVE DISPLAY OF NETWORKS IN WASH WITH AWK
+
+	wash -i interface | awk '($3 <= "-75") && ($6 == "RalinkTe")'	
+
+
+WIFI MONITORING 
+
+	airmon-ng check kill
+
+	monitor: 
+
+		airodump-ng INTERFACE --channel # --bssid #### -w /path/of/file/to/save/handsh.
+		
+
+	deauth:
+
+		aireplay-ng -0 # OF DEAUTH -a STATION MAC -c CLIENT MAC interface
+
+
+
+
+	
+	 

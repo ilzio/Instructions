@@ -1,0 +1,80 @@
+- Download tarball from site 
+- Follow instructions, by making sure to install also the -dev version of the libraries that are required
+- Location of libraries and files is not that proposed in documentation:
+	- in order to find libraries execute find / -name *.so | grep [name of library]
+	- make same thing for module mod_security2.so
+
+- Download yajl https://lloyd.github.io/yajl/
+- ./configure; make; make install
+- 
+- IN MODSECURITY EXTRACTED FOLDER:
+
+	- configure with yajl 
+		./configure --with-yajl=/usr/local/include/yajl
+	- make; sudo install
+		
+- Verify that module is included by executing apachectl -M
+
+Folder structure:
+
+/usr/local/modsecurity/ root:apache rwxr-x---
+/usr/local/modsecurity/var root:apache rwxr-x---
+	/usr/local/modsecurity/var/audit apache:root rwx------
+	/usr/local/modsecurity/var/data apache:root rwx------
+	/usr/local/modsecurity/var/log root:root rwx------
+	/usr/local/modsecurity/var/tmp apache:apache rwxr-x---
+	/usr/local/modsecurity/var/upload apache:root rwx------
+/usr/local/modsecurity/lib
+/usr/local/modsecurity/etc
+/usr/local/modsecurity/bin root:apache rwxr-x---
+
+- Copy modsecurity.conf.recommended (renaming it) to /usr/local/modsecurity/etc 
+
+and apply these changes: 
+
+SecRuleEngine Off 
+
+SecTmpDir /usr/local/modsecurity/var/tmp/
+SecDataDir /usr/local/modsecurity/var/data/
+#SecUploadDir /usr/local/modsecurity/var/upload/
+#SecUploadKeepFiles Off
+SecAuditLogType Concurrent 
+SecAuditLog /usr/local/modsecurity/var/log/audit.log
+SecAuditLog2 /usr/local/modsecurity/var/log/audit2.log
+
+# Specify the path for concurrent audit logging.
+SecAuditLogStorageDir /usr/local/modsecurity/var/audit/
+
+## JSON LOGS 
+
+SecAuditLogFormat json
+
+SecStatusEngine Off
+
+EDIT IN APACHE CONFIG FILE (/etc/apache2/apache.conf)
+
+!!! MUST BE AT THE BEGINNING OF FILE or, at least BEFORE INCLUDE OF VIRTUALHOSTS in order to be configurable in virtualhost 
+
+#Load Libraries and modules
+
+#LoadFile /usr/lib/x86_64-linux-gnu/libxml2.so
+#LoadFile /usr/lib/x86_64-linux-gnu/liblua5.1.so
+#LoadFile /usr/lib/x86_64-linux-gnu/libyajl.so
+LoadModule security2_module /usr/local/modsecurity/lib/mod_security2.so
+
+	<IfModule mod_security2.c>
+
+	Include /usr/local/modsecurity/etc/modsecurity.conf
+
+	</IfModule>
+
+IN site-available FILE INCLUDE (inside virtualhost)
+
+<IfModule mod_security2.c>
+
+SecRuleEngine On
+Include /usr/local/modsecurity/etc/crs-setup.conf
+Include /usr/local/modsecurity/etc/rules/*.conf
+
+</IfModule>
+

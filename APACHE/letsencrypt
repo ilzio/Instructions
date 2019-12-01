@@ -1,0 +1,6 @@
+sudo git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+   cd /opt/letsencrypt
+   
+    sudo ./letsencrypt-auto
+   sudo service apache2 restart
+    sudo ./letsencrypt-auto

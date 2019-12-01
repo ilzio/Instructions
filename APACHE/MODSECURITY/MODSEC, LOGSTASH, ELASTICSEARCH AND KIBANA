@@ -1,0 +1,95 @@
+MODSEC, LOGSTASH, ELASTICSEARCH AND KIBANA
+
+################# ELASTICSEARCH 
+
+
+as a prerequisite for elasticsearch, need to install Java 
+
+	apt install default-jre
+
+Download + install ElasticSearch
+
+Setup run on startup 
+
+	- sudo update-rc.d elasticsearch defaults 95 10
+
+Start / Stop elasticsearch 
+
+	- sudo -i service elasticsearch start / stop 
+
+Check whether ES is running -> send request to port 9200 on localhost
+
+
+See indexes in ES : http://localhost:9200/_cat/indices?v
+
+################# KIBANA
+
+	-Download Kibana wget https://artifacts.elastic.co/downloads/kibana/kibana-6.4.2-linux-x86_64.tar.gz
+
+	- Edit config/kibana.yml and set ip address of server
+
+################# LOGSSTASH
+
+- Download Logstash
+
+- cd /opt/
+
+- Download configurations from 
+	
+	git clone https://github.com/bitsofinfo/logstash-modsecurity.git
+
+- mv logstash-modsecurity.cfg.example logstash-modsecurity.conf
+
+- vim logstash-modsecurity.conf -> comment out/delete modules not being used, specify SOURCEDIR as /opt/logstash-modsecurity/ (directory where git clone was executed)
+
+
+***in 1010_input_file_example.conf replace with 
+
+	input {
+  file {
+    # IMPORTANT! set this correctly to the charset
+    # that your server writes these log files in
+    path => "/usr/local/modsecurity/var/log/audit.log"
+    type => "mod_security"
+
+    
+    codec => multiline {
+      charset => "US-ASCII"
+      pattern => "^--[a-fA-F0-9]{8}-Z--$"
+      negate => true
+      what => next
+    }
+  }
+}
+~   
+
+
+
+***in 3000_output_stdout_example.conf replace with 
+
+	output {
+  elasticsearch {
+  hosts => ["http://127.0.0.1:9200/"]
+  index => "modsecurity-%{+YYYY.MM.dd}"
+  }
+  stdout { codec => rubydebug }
+}
+
+
+
+- run deploy.sh modsecurity.conf -> this will export configuration files to /etc/logstash/conf.d
+
+
+
+
+
+
+
+
+
+##############
+
+once deployed specify configuration files directory with -f: 
+
+/home/$USERNAME/Desktop/tmp/logstash-6.4.2/bin/logstash  -f /etc/logstash/conf.d/
+

@@ -1,0 +1,59 @@
+Setting permissions on webserver
+
+give ownership of vendor and storage to webserver user and group
+
+	sudo chown -R www-data:www-data /path/to/your/project/vendor
+	sudo chown -R www-data:www-data /path/to/your/project/storage
+
+add user to webserver group
+
+	sudo usermod -a -G www-data ubuntu
+
+optionally, give ownsership to whole directory to user and group 	
+
+	sudo chown -R ubuntu:www-data /path/to/your/laravel/root/directorycd a
+
+set permission for files to 664 and directories 755  
+
+
+	sudo find /path/to/your/laravel/root/directory -type f -exec chmod 644 {} \;    
+
+	The assigned group (www-data) can read and execute, but not write.
+	Everyone else can read and execute, but not write. (is it ok for file storage???)
+
+	sudo find /path/to/your/laravel/root/directory -type d -exec chmod 755 {} \;
+
+
+The NORMAL way to set permissions is to have your files owned by the webserver:
+
+    sudo chown -R www-data:www-data /path/to/your/root/directory
+
+if you do that, the webserver owns all the files, and is also the group, and you will have some problems uploading files or working with files via FTP, because your FTP client will be logged in as you, not your webserver, so add your user to the webserver user group:
+
+  sudo usermod -a -G www-data ubuntu
+
+Of course, this assumes your webserver is running as www-data (the Homestead default), and your user is ubuntu (it's vagrant if you are using Homestead.
+
+Then you set all your directories to 755 and your files to 644... SET file permissions
+
+sudo find /path/to/your/root/directory -type f -exec chmod 644 {} \;    
+SET directory permissions
+sudo find /path/to/your/root/directory -type d -exec chmod 755 {} \;
+I prefer to own all the directories and files (it makes working with everything much easier), so I do:
+
+	sudo chown -R www-data:www-data /path/to/your/root/directory
+
+Then I give both myself and the webserver permissions:
+
+	sudo find /path/to/your/root/directory -type f -exec chmod 664 {} \;    
+	sudo find /path/to/your/root/directory -type d -exec chmod 775 {} \;
+
+Whichever way you set it up, then you need to give read and write permissions to the webserver for storage, cache and any other directories the webserver needs to upload or write too (depending on your situation), so run the commands from bashy above :
+
+	sudo chown -R www-data:www-data /path/to/your/project/vendor
+	sudo chown -R www-data:www-data /path/to/your/project/storage
+	
+
+Now, you're secure and your website works, AND you can work with the files fairly easily
+
+

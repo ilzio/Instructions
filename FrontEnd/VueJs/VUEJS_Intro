@@ -1,0 +1,124 @@
+Directives : commands to be inserted into html markup  to execute routines and others tasks
+
+	ex: v-model / v-if / v-else / v-show
+
+V-SHOW / V-IF 
+
+		<h1 v-if="status">{{title}}</h1> only show if status is true
+			<div v-if="usuario.id == 1 "> 
+
+	V-SHOW hides/show elements on screen that are part of the DOM (display block / none)
+
+	V-IF conditionally creates elements in dom. 
+
+
+V-FOR 
+
+	<li v-for="(item, index) in linguagens">{{index}} - {{item.nome}}</li>
+
+	data: { 
+				
+			
+				linguagens: [
+				{ nome: "Javascript" },
+				{ nome: "php"},
+				{ nome: "java"},
+				{ nome: "c#"},
+				{ nome: "python"}
+
+				]
+			}
+
+V-MODEL 
+	allows to retrieve and treat value from forms 
+
+V-Bind 
+	allows to bind values from variables to  attributes to html tags  and treat value from forms 
+	also works with ":" intead of "v-bind:"
+
+	V-on = event handler 
+
+	v-on:click / @click
+
+FILTERS
+
+are methods that can be passed to objects by means of | and receive parameters
+
+COMPUTED: 
+
+will be run also independently to alteration of dependencies/parameters
+
+WATCH 
+listen for variable alterations and execute routine when change happens
+
+COMPONENTS 
+
+- must be instantiated always before vue instance
+
+- must only one "root" element (e.g. main div), everithing outside will be ignored
+
+- when specifying data inside components a function data () must be used that returns values/ variables
+
+declaring properties inside components
+
+1) define name, without types or attributes
+
+
+props: ['items']
+
+
+
+2) as an Object, specifying properties
+
+ props: {
+	items: {
+		type: Array | String | Object | Boolean,
+		required: true,
+		default: [] -> default value
+	}
+}
+
+-------
+
+pass data from child to parent component
+
+-create event
+
+this.$emit('[event-name]', [data]);
+
+
+[event-name] can then be used as a listener v-on:event-name or @event-name and a function can be specified to be executed when event happens
+
+----------------------
+
+pass data amonsgst unrelated components
+
+*requires 	Vue.prototype.$eventHub
+
+Vue.prototype.$eventHub will be target and source of  events 
+
+
+SLOTS 
+
+???
+
+MIXINS 
+
+works as a repository of methods that can be written once and used inside any component 
+
+1) declare object 
+	var mixin = {
+				methods: {
+				getUsers(){
+					console.log('users');
+				}
+				}
+			}
+2) in vue instance: 
+
+	mixins: [mixin],
+
+
+AJAXXXXXXXXXXXXXXXXXXXXX
+
+

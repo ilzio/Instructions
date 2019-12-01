@@ -1,0 +1,86 @@
+Javascript ES6
+
+- al posto di var let / const (var e' sia ridichiarabile, sia riassegnabile -> problemi!)
+	- let = permette riassegnazione di valore, scope e' funzione, blocco e globale
+        
+	- const = non permette riassegnazione di valore, scope e' funzione, blocco e globale
+
+	* preferire sempre const di default, let se necessario
+
+- spread operator: concatenare oggetti o arrays
+    *crea copia dell'oggetto da concatenare
+
+        const address = {
+            street: "via mulino a vento",
+            citta : "catania",
+            provincia: "catania"
+        }
+
+
+        const person = {
+            firstName : "Saro",
+            lastName : "Fassaperla",
+            age : 69,
+            getFullName : function(){
+                return `il nome completo è ${this.firstName} ${this.lastName}`;
+            },
+            ...address
+        }
+
+- template literals (stringhe con backtick)
+
+- classi -> costruttori 
+
+    class Persona {
+        // costruttore
+        constructor(firstName, lastName, age) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.age = age;
+        }
+        // metodi
+        getFullName = function () {
+            return `${this.firstName} ${this.lastName}`;
+        }
+    }
+
+- classi -> ereditarieta' 
+
+    class Studente extends Persona {
+        
+        constructor(firstName, lastName, age, matricola, corsoDiStudi){
+            // chiama costruttore classe da cui eredita e passa argomenti
+            super(firstName, lastName, age)
+
+            this.matricola = matricola;
+            this.corsoDiStudi = corsoDiStudi;
+        }
+    }
+	
+- arrow functions 
+
+    - funzioni anonime con sintassi piu' compatta (non hanno un "this")
+
+    // sintassi nel caso presente unico return (possibile omettere parentesi graffe e return)
+    const somma = (x, y) => x+y
+
+
+- array map -> cicla un array, esegue una funzione per ogni ciclo, pusha i valori in un array specificato
+
+    const arrayDue = array.map((elemento, index) => {
+        return console.log(` elemento: ${elemento}, indice: ${index}` )
+    })
+
+- array filter creare array di oggetti che soddisfano una condizione
+
+    const minorenni = chistiani.filter(item => item.eta < 18)
+
+- array find -> cicla array e restituisce primo elemento che rispetta condizione
+
+    const trovato = array.find(element => element === "valore" )
+
+
+
+
+
+

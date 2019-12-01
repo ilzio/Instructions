@@ -1,0 +1,269 @@
+MODSECURITY AUDIT LOG EXPLAINED
+
+A	Audit log header (mandatory)
+B	Request headers
+C	Request body
+D	Reserved
+E	Response body
+F	Response headers
+G	Reserved
+H	Audit log trailer, which contains additional data
+I	Compact request body alternative (to part C), which excludes files
+J	Information on uploaded files
+K	Contains a list of all rules that matched for the transaction
+Z	Final boundary (mandatory)
+
+
+AUDIT LOG HEADER SECTION A
+
+[Date and time], UNIQUE ID of the transaction, SOURCE IP, SOURCE PORT, DESTINATION IP, DESTINATION PORT
+
+###################################################
+
+MODSECURITY RULES
+
+SecRule VARIABLE(S) OPERATOR ACTIONS
+
+#Parameter value
+
+	SecRule ARGS "@contains blockme" "id:001,deny,status:503,msg:'blockme parameter detected'"
+
+#URI matches regular expression
+
+	SecRule REQUEST_URI "@rx <script>" "id:003,deny,status:503,msg:'script in uri'"
+
+#User agent contains "Chrome" in headers
+
+	SecRule REQUEST_HEADERS:User-Agent "@rx Chrome" "id:004,deny,status:503,msg:'access from chrome'"
+
+#Exceptions, removing rules
+
+	By ID
+
+		SecRuleRemoveByID "200004"
+
+	By Message 
+
+		SecRuleRemoveByMsg "Host header is a numeric IP address"
+
+VARIABLES
+
+#Specify a parameter whose value we want to check
+
+	SecRule ARGS:[NAME OF THE ARGUMENT] [OPERATOR]
+
+	#All but one specific parameter 
+		SecRule ARGS|!ARGS:[NAME OF THE ARGUMENT TO BE EXCLUDED] 
+
+
+#Chaining rules -> equivalent to the AND operator (the first will always run, the execution of the second depends of the execution of the first)
+
+	SecRule ARGS:[NAME OF THE ARGUMENT] chain
+	SecRule ARGS:[NAME OF THE ARGUMENT] 
+
+#CHECKING NUMBER OF VARIABLES
+
+#no parameters
+	SecRule &ARGS "@eq 0"
+#more than one parameter with a defined name (in this case username)
+	SecRule &ARGS:username "!@eq 1"
+
+ACTIONS
+
+(not specifying an operator assumes use of regex). Any time there is comma or whitespace, double quotes must be used!
+
+	SecRule ARGS K1 "log,deny,msg:'Acme attack detected'"
+
+
+
+OPERATORS 
+
+#username not admin or root
+	SecRule ARGS:username "!@rx ^(admin|root)$"
+
+#OR operator: at least one of the conditions must be true in order to execute (in this case argument = 5)
+	SecRule ARGS:p|ARGS:q "!@eq 5"
+#AND: both must be true (none of them = 5)
+
+	SecRule ARGS:p "!@eq 5" chain
+	SecRule ARGS:q "!@eq 5"
+
+TRANSFORMING INPUT
+	
+	#will operate on reception of request headers, transforming request headers in lowercases, removing whitespaces, and log if headers contain the word: chrome. Note that t:none is used in order to reset any transformation that the rule might inherit from somewhere else, in order to apply custom transformations. 
+	
+	SecRule REQUEST_HEADERS:User-Agent "@rx chrome" \
+	"phase:1,t:none,t:lowercase,t:compressWhitespace,id:004,log,msg:'access from chrome, transformation has been applied with success!!'"
+
+	*other transformations are, for example: t:base64Decode / t:hexEncode
+
+DEFAULT ACTIONS
+
+# First we have some rules that only warn
+SecDefaultAction phase:2,log,pass
+SecRule ARGS W1
+SecRule ARGS W2
+...
+SecRule ARGS W19
+# Now we have some rules that block
+SecDefaultAction phase:2,log,deny,status:500
+SecRule ARGS B1
+...
+SecRule ARGS B89
+
+
+UNCONDITIONAL ACTIONS -> will execute no matter what
+
+	can be used to set variables --???
+
+
+ACTIONS
+
+1- Pass: continue to next rule, can execute some action such as incrementing a counter or Skipping
+2- Allow: basically whitelisting, can be set to indicate which part of the inspection process will be bypassed
+3- Block: blocks request, but is not same as deny, drop, redirect and proxy. 
+
+SKIPS -> conditional execution of rules (functions in combination with Pass, only for rules in same phase)
+
+	#if first rule is executed, will skip following 2 
+
+	SecRule ARGS K1 id:1,nolog,pass,skip:2
+	SecRule ARGS K2 id:2,nolog,pass
+	SecRule ARGS K3 id:3,log,block
+	*...execution will resume from here
+
+#problem when removing rule - for example by id - skip will prevent other rules from executing alternative: skipAfter
+
+	#if first or second rules are executed, execution will resume after rule(s) with id:3
+	SecRule ARGS K1 id:1,nolog,pass,skipAfter:3
+	SecRule ARGS K2 id:2,nolog,pass,skipAfter:3
+	SecRule ARGS K3 id:3,log,block
+	*...execution will resume from here
+
+	SecLabel can be used to specify start of group of rules
+
+	SecRule ARGS K1 id:1,nolog,pass,skipAfter:4
+	SecRule ARGS K2 id:2,nolog,pass,skipAfter:4
+	SecRule ARGS K3 id:3,log,block
+	SecLabel id:4
+	*...execution will resume from here
+
+#pseudo if-else-then loop: rule with id 3 is executed only if there is a match in rule 1 
+
+	SecRule ARGS K1 id:1,nolog,pass,skip:2 -> if match, skip and execute rule with id 3
+	SecRule ARGS K2 id:2,block -> if no previous match, continue
+	SecAction nolog,pass,skip:1 -> pull next request, therefore do not execute it!
+	SecRule ARGS K3 id:3,block
+
+VARIABLE MANIPULATION
+
+#it is possible to set variables as actions of rules. Example: creating a counter 
+
+	SecAction nolog,pass,setvar:counter=1 -> unconditional action creates counter
+	SecRule ARGS K1 id:1,nolog,pass,setvar:counter=+1 -> match increases counter
+
+	SecAction nolog,pass,setvar:!counter=1 -> unconditional action deletes counter
+
+##EXAMPLE: compare two variable using %{} variable indicator
+
+	# If an absolute URI (containing hostname) was given on the request
+	# line, check that the same hostname is used in the Host header
+	SecRule REQUEST_URI_RAW "@beginsWith http" "chain,phase:2,block,msg:'Hostname …
+	mismatch'"
+	SecRule REQUEST_URI_RAW "!@beginsWith http://%{REQUEST_HEADERS.Host}"
+
+DATA CAPTURE 
+
+-> Auditlog will save data captured by regex in TX.0 and show it in the field [data ""]
+
+SecRule REQUEST_HEADERS:User-Agent "@rx chrome" \
+"phase:1,t:none,t:lowercase,t:compressWhitespace,id:004,,pass,log,msg:'access from chrome, transformation has been applied with success!!',capture,logdata:%{TX.0}" 
+
+
+ADDING METADATA
+
+- id:
+- severity:
+- tag: 
+
+EXECUTE MODSECURITY COMMAND -> ctl: 
+
+ex: SecRule REMOTE_ADDR "@streq 192.168.1.1" \
+ phase:1,t:none,nolog,pass,ctl:ruleEngine=DetectionOnly
+
+###################################################################
+
+WHITELISTING 
+
+#IPs -> takes a list of IP and changes modsecurity behaviour, from blocking to detection only for these addresses
+
+	SecRule REMOTE_ADDR "@rx ^192\.168\.1\.(1|5|10)$" \
+	 phase:1,t:none,nolog,pass,ctl:ruleEngine=DetectionOnly
+
+
+
+
+###################################################################
+
+Example of Variables that can be used:
+
+	
+	SecRule REQUEST_HEADERS:User-Agent  
+		ex: SecRule REQUEST_HEADERS:User-Agent "@rx chrome" "id:003,deny,status:503,msg:'access from chrome'"
+
+	SecRule REQUEST_HEADERS:Content-Type
+
+#DISABLE REQUEST METHOD
+	SecRule REQUEST_METHOD "!^(GET|HEAD)$" \
+ 	"phase:1,t:none,log,block,id:1001,rev:2,\
+ 	severity:WARNING,msg:'Request method is not allowed'"
+
+
+Example of String operators 
+
+@beginsWith Begins with
+@contains Contains
+@endsWith Ends with
+@rx Regular pattern match
+@pm Parallel matching
+@pmFromFile (@pmf in v2.6) Parallel matching, with arguments from a file
+@streq String equal to
+@within Within
+
+Example of Numeric operators 
+
+@eq Equal
+@ge Greater or equal
+@gt Greater than
+@le Less or equal
+@lt Less than
+
+
+Other
+
+@geoLookup Determines the physical location of an IP address
+@inspectFile Invokes an external script to inspect a file
+@rbl Looks parameter against a RBL (real-time block list)
+@verifyCC Checks if the parameter is a valid credit card number 
+
+
+###############################################################################
+
+PERSISTENT STORAGE
+
+CREATING RECORD -> initcol
+
+#IP collection 
+
+SecAction phase:1,nolog,pass,initcol:IP=%{REMOTE_ADDR}
+
+
+#######################################################################################
+
+#everithing is blocked, only if a specific header with a specific value is present, request goes through (by disabling rule for specific this request)
+
+SecRule REQUEST_HEADERS:custom "@containsWord token" "id:002,msg:'request header custom  corresponding, access granted',ctl:RuleRemoveById=18477"
+
+SecRule REQUEST_URI "/" "deny,id:18477,msg:'nothing passes'
+
+

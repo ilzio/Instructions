@@ -1,0 +1,15 @@
+Forcing debugging mode
+
+1) make sure usb debugging is on on phone, chrome is open on phone
+
+
+2) on local machine
+- install Usb drivers for windows
+- unzip platform-tools_r28.0.1-windows
+- in command prompt, go to directory where it has been unzipped and enter command:
+
+	 adb kill-server and adb start-server
+	 *should be prompted to accept debut from computer
+
+3) go to chrome address chrome://inspect
+	* device should be visible

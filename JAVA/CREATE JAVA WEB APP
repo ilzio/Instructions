@@ -1,0 +1,71 @@
+CREATE JAVA WEB APP 
+
+1) Create deployment directory structure: 
+
+|----> DateApp (web root folder)
+		|---->WEB-INF
+			|-------------------->classes(folder)
+			|---->web.xml  				|---->DateServlet.java (see attached file)
+										|---->com.nt.servlet (package will be created upon compilation)
+													|---->DateServlet.class(file will be created upon compilation)
+
+
+
+2) Develop Servlet component (DateServlet.java -> attached file)
+
+3) Compile Servlet component (above)
+	a) Add <TOMCAT_HOME>/lib/servlet-api.jar to CLASSPATH (?) or copy to JAVA_HOME (not where bin is located)/jre/lib/ext
+
+      - adding to classpath: 
+      	sudo vim /etc/environment
+      	insert line: CLASSPATH="/home/$USERNAME/apache-tomcat-8.0.27/lib/servlet-api.jar;."
+    b) make sure it works: 
+
+    	javap javax.servlet.GenericServlet
+
+    	[javap is java disassembler, prints content of java class file]
+
+
+    c) compile (in classes directory):  
+
+    	javac -d . DateServlet.java 
+
+    	[javac is compiler, compiles .java files in .class files -d . tells it to create package in current directory]
+
+    d) now you have a DateServlet.class in the current directory
+
+4) Write web.xml file (web application configuration file)
+
+	* servlet containers recognize only those java classes (components) whose details are configured in web.xml file [ servlet component configurations ]
+
+	*it has to have at least 3 details:
+		1) servlet logic name
+		2) fully qualified servlet component class name
+		3) url pattern
+
+EXAMPLE OF web.XML FILE 
+
+	<web-app>  <!-- ROOT TAG  -->
+		<!-- THIS FIRST PART DEFINES THE SERVLET  -->
+		<servlet>
+			<servlet-name>date</servlet-name> <!-- LOGICAL NAME MATCHIN...  -->
+			<servlet-class>com.nt.servlet.DateServlet</servlet-class>
+		</servlet>
+		<!-- THIS SECOND PART DEFINES THE SERVLET MAPPING  -->
+		<servlet-mapping>
+			<servlet-name>date</servlet-name> <!-- ... LOGICAL NAME MATCHING  -->
+			<url-pattern>/test1</url-pattern>  <!-- ... always starting with "/" can be everything  -->
+		</servlet-mapping>
+	</web-app>
+
+5) DEPLOY
+
+
+
+https://youtu.be/Pd-045tn8KY?t=2919
+
+
+
+
+
+  												

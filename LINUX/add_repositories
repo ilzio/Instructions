@@ -1,0 +1,24 @@
+add repositories two ways:
+
+a) add-apt-repository command 
+
+	sudo add-apt-repository ppa:libreoffice/ppa
+
+	OR
+
+	add-apt-repository 'deb http://archive.getdeb.net/ubuntu wily-getdeb games'
+
+b) create file manually 
+
+	create a file in /etc/apt/sources.list.d directory, the file name must end with .list extension
+
+	For example:
+
+		1) vim /etc/apt/sources.list.d/games.list
+		
+		Add the repository paths as below.
+	
+		2) deb http://archive.getdeb.net/ubuntu wily-getdeb games
+	
+	
+

@@ -1,0 +1,93 @@
+VUE JS
+
+1)install node js 
+
+ sudo apt-get install curl
+
+ curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+
+sudo apt-get install nodejs
+
+
+5) Test installation using
+$ node -v
+
+$ npm version
+
+$ npx -v
+
+
+
+6) Install packages with npm 
+
+- in project directory execute 
+
+npm init
+
+after some questions, a package.json will be created that is going to manage all dependecies
+
+example install moment.js
+
+$ npm install moment --save
+
+This command does two things — first, it downloads all the code from the moment.js package into a folder called node_modules. Second, it automatically modifies the package.json file to keep track of moment.js as a project dependency.
+
+now, with the package.json, when deploying it is possible to execute 
+npm install 
+
+in the same way in which composer works.
+
+Now, in order to use imports in index.js we need a module bundler (simulating the functioning of node js), webpack 
+
+
+npm install webpack webpack-cli --save-dev
+
+we’re installing two packages — webpack and webpack-cli (which enables you to use webpack from the command line). Also note the --save-dev argument — this saves it as a development dependency, which means it’s a package that you need in your development environment but not on your production server.
+
+Now we have webpack and webpack-cli installed as packages in the node_modules folder. You can use webpack-cli from the command line as follows:
+
+$ ./node_modules/.bin/webpack index.js --mode=development
+This command will run the webpack tool that was installed in the node_modules folder, start with the index.js file, find any require statements, and replace them with the appropriate code to create a single output file (which by default is dist/main.js). The --mode=development argument is to keep the JavaScript readable for developers, as opposed to a minified output with the argument --mode=production.
+
+Now that we have webpack’s dist/main.js output, we are going to use it instead of index.js in the browser, as it contains invalid require statements. 
+
+we’ll need to run the webpack command each time we change index.js. This is tedious, and will get even more tedious as we use webpack’s more advanced features (like generating source maps to help debug the original code from the transpiled code). Webpack can read options from a config file in the root directory of the project named webpack.config.js, which in our case would look like:
+
+// webpack.config.js
+module.exports = {
+  mode: 'development',
+  entry: './index.js',
+  output: {
+    filename: 'main.js',
+    publicPath: 'dist'
+  }
+};
+Now each time we change index.js, we can run webpack with the command:
+
+$ ./node_modules/.bin/webpack
+
+We don’t need to specify the index.js and --mode=development options anymore, since webpack is loading those options from the webpack.config.js file. This is better, but it’s still tedious to enter this command for each code change — we’ll make this process smoother in a bit.
+
+in package.json add this code 
+
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --progress --mode=production",
+    "watch": "webpack --progress --watch"
+  },
+
+  now it is possible to run 
+
+  npm run build
+
+  npm run watch
+
+Any new JavaScript libraries will be added using require statements in the JavaScript, as opposed to adding new <script> tags in the HTML.
+
+			
+
+
+
+
+
+

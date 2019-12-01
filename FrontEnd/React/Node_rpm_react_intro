@@ -1,0 +1,155 @@
+* install NODE
+* install create-react-app globally 
+* create app with create-react-app app-name
+
+this will create: 
+
+* node_modules FOLDER
+* public FOLDER
+
+after npm start
+
+* src FOLDER
+    index.js -> entry point
+
+        * imports dependencies from libraries
+            *main react
+            import React from 'react';
+            *main react
+            import ReactDOM from 'react-dom';
+            *css 
+            import './index.css';
+            *App component [must use "./" notation]
+            import App from './App';
+            *???
+            import * as serviceWorker from './serviceWorker';
+            *renders App component into an element whose id is root
+            ReactDOM.render(<App />, document.getElementById('root'));
+
+* vscode extensions 
+    * es7 React/Redux/GraphQL/React-Native
+    * snippets
+        rcc -> create react class component
+        rcf -> create react functional component 
+
+    * vscode-styled-jsx
+    * vscode-styled-components
+
+    ** to make sure emmet works with jsx: 
+    - preferences -> open user settings -> extensions -> emmet -> json settings and add: 
+        "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    }
+
+*components
+
+    * functional components: ARE STATELESS (can only accept props) and cannot access life life cycles
+
+    const Pippo = (props) => {
+        return( 
+            <div>
+            <Header />
+            
+            </div>
+        )
+    }
+
+    * Class components di classe: classes extending React.Component base component
+        -> are STATEFUL and accept life cylcle hooks speficications 
+    
+    import React, {Component}, from 'react'
+
+    class Paragrafo extends Component {
+        constructor(){
+            super()
+            this.state = {
+                key: value
+            }
+        }
+        render() {
+            return (
+                <div> /</div>
+
+            )
+        }
+    }
+
+* props
+    * Components have props. Props are objects whose keys correspond to component properties. 
+        *They cannot be modified by components. React has a TOP-DOWN logic 
+
+*state 
+    * oggetto che contiene dati dinamici che vengono osservate. 
+    * e' gestito e aggiornato dal componente in cui e' incapsulato 
+    * in order to be modified the component must call the setState method
+        
+        this.setState({
+            key: this.state.key +1
+        })
+
+*cicli di vita
+
+    * Mount
+        *render() -> as soon as component renders : happens multiple times
+        *componentDidMount() -> as soon as component has mounted: only happens once 
+
+*iterate through components
+
+    imagine a Todo component that has a TodoList child 
+
+     <Todolist items={this.state.items} />
+
+    class Todolist extends React.Component{
+        constructor(props){
+             super(props)
+         }
+        render(){
+            return (
+                <ul>
+                    {this.props.items.map(item => (
+                        <li key={item.id}>{item.text}</li>
+                    ))}
+                </ul>
+            )
+        }
+    }
+
+FORMS 
+
+* form components' state should exclusively contain form fields. 
+* in order to do so -> 
+
+    * assign to every input a name and a value 
+         
+         <input value={this.state.email} name="email" onChange={this.handleInputChange} type="text" />
+
+    *create a method that handles the input change event that will map the value of each field  
+
+        handleInputChange = (event) => {
+            const value = event.target.value
+            const name = event.target.name
+            this.setState({
+                [name]: value
+            });
+        }
+
+* create a function inside parent component that will be passed as argument to form and, when executed, will exclusively prevent default submission and  return its state. 
+
+PARENT:
+
+1)
+    <Form handleSubmit={this.handleFormSubmission} />
+2)
+    handleFormSubmission = (payload) => {
+        this.props.addUser(payload)
+        this.toggleForm()
+    }
+
+CHILD FORM: 
+
+    handleSubmit = (event) => {
+        event.preventDefault();
+        this.props.handleSubmit(this.state)
+    }
+
+

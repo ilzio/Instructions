@@ -1,0 +1,235 @@
+                    CRIAR UM DATABASE E UMA TABELA
+
+CREATE DATABASE nomedatabase;
+USE nomedatabase;
+CREATE TABLE nometabela;
+CREATE TABLE posts
+
+          CREATE TABLE posts (
+            id INTEGER PRIMARY KEY AUTO_INCREMENT,
+            titulo VARCHAR(255),
+            conteudo TEXT
+          );
+
+                          OPERACOES COM TABELAS
+
+SHOW TABLES; -> imprime todas as tabelas
+
+DESC nometabela; -> visualiza a estrutura da tabela nometabela;
+
+DROP TABLE nometabela; -> apaga uma tabela
+
+DROP DATABASE nomedatabase; -> apaga database
+
+
+                            MODIFICAR TABELAS
+
+ALTER TABLE nometabela MODIFY nomecolumna TIPOCARACTERE
+
+      MariaDB [aula04]> ALTER TABLE posts MODIFY titulo VARCHAR(255);
+
+ALTER TABLE nometabela ADD nomecolumna TIPOCARACTERE; -> adiciona uma columna
+
+ALTER TABLE nometabela DROP nomecolumna; -> apaga uma columna
+
+ALTER TABLE nometabela ADD PRIMARY KEY (nomecolumna); -> adiciona uma primary key na colunma desejada
+
+    MariaDB [aula04]> ALTER TABLE posts ADD PRIMARY KEY (id);
+    MariaDB [aula04]> ALTER TABLE posts MODIFY id INT AUTO_INCREMENT; -> adiciona auto increment
+
+    MariaDB [aula04]> ALTER TABLE posts MODIFY titulo VARCHAR(100) NOT NULL; -> especifica que a columna titulo nao pode ser vazio (NOT NULL COM ESPACOS!)
+
+    ALTER TABLE posts MODIFY titulo VARCHAR(100) NOT NULL DEFAULT "";
+
+
+TRUNCATE TABLE posts -> limpa os registros, da um delete e todos os conteudos;
+
+
+                                                  INSERTAR VALORES EM TABELAS
+
+INSERT INTO nomedatabase(nomecolumna,nomecolumna) VALUES ('meu primeiro posts', 'qualquer coisa esse e o conteudo do post');
+
+    MariaDB [aula04]> INSERT INTO posts(titulo,conteudo) VALUES ('meu primeiro posts', 'qualquer coisa esse e o conteudo do post');
+
+
+
+                                                      VER CONTEUDO TABELAS
+
+
+SELECT * FROM nometabela; -> mostra todo
+
+SELECT nomeColumna,nomeColumna FROM nometabela;
+
+
+                                                    ATUALIZAR CONTEUDO TABELAS
+
+UPDATE nometabela SET columna = 'valor columna' WHERE columna = 'valor';
+
+      MariaDB [aula04]> UPDATE posts SET titulo = 'teste1' WHERE id = 3;
+      MariaDB [aula04]> UPDATE posts SET titulo = 'teste3' WHERE id >= 2 ; -> pode usar operadores aritmeticos
+
+                                                      APAGAR REGISTROS NA TABELA
+
+DELETE FROM nometabela WHERE id = 1;
+
+    TRANSACAO, PERMITE VOLTAR ATRAS PARA ESTADO INITIAL, SE ACONTECER ALGUM PROBLEMA, SO FUNCIONA COM OS REGISTROS, A PARTE ESTRUCTURAL DA TABELA VAI CONTINUAR ALLI
+
+
+
+BEGIN;
+
+    comandos
+    comandos
+    comandos
+
+ROLLBACK;
+
+            RELACIONAR DUAS TABELAS COM CHAVE EXTANGEIRA
+
+CREATE TABLE posts( id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    titulo VARCHAR(255),
+                    conteudo TEXT,
+                    id_usuario INTEGER,
+                    FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+                    );
+
+
+
+                            INNER JOIN > cruzar as TABELAS
+
+SELECT * FROM posts INNER JOIN usuarios ON posts.id_usuario = usuarios.id; -> cruza as tabelas cruzando o usuario e o id do post (com a foreign key)
+
+
+
+                          com apelidos
+
+SELECT p.titulo as Titulo,p.conteudo as Conteudo,u.usuario as Nome FROM posts p INNER JOIN usuarios u ON p.id_usuario = u.id;
+
+SELECT p.titulo, p.conteudo, u.usuario FROM posts p INNER JOIN usuarios u ON p.id_usuario = u.id WHERE u.usuario = 'Joao';
+
+                        ordem descendente
+
+SELECT p.titulo, p.conteudo, u.usuario FROM posts p INNER JOIN usuarios u ON p.id_usuario = u.id ORDER BY p.id DESC ;
+
+
+
+                  limitar quantidade de registros
+
+SELECT p.titulo, p.conteudo, u.usuario FROM posts p INNER JOIN usuarios u ON p.id_usuario = u.id ORDER BY p.id DESC limit 2,5;
+
+                                like
+
+SELECT p.titulo, p.conteudo, u.usuario FROM posts p INNER JOIN usuarios u ON p.id_usuario = u.id WHERE u.usuario like '%Ma%';         -> tudo que vai ter com esas letras                       
+
+
+###########################################################################################################
+
+
+## Instalando driver MySQL
+```
+sudo apt install php7.0-mysql
+```
+## Instalando driver PostgreSQL
+```
+sudo apt install php7.0-pgsql
+```
+## Reiniciando o apache2
+```
+sudo service apache2 restart
+```
+
+# Banco de dados
+
+## Logando como root
+### MySQL
+```
+sudo su
+mysql
+```
+### PostgreSQL
+```
+sudo su
+su postgres
+psql
+```
+
+## Criando Bando de Dados
+```
+CREATE DATABASE tarefas;
+```
+## Criando Usuario
+### MySQL
+```
+CREATE USER 'lucas'@'localhost' IDENTIFIED BY '@da4linux';
+GRANT ALL PRIVILEGES ON *.* TO 'lucas'@'localhost';
+```
+### PostgreSQL
+```
+CREATE USER lucas PASSWORD '123';
+```
+#### Alterando o dono do banco PostgreSQL
+```
+ALTER DATABASE tarefas OWNER TO lucas;
+```
+
+## Saindo do usuario root
+### MySQL
+```
+exit
+exit
+exit
+```
+### PostgreSQL
+```
+\q
+exit
+exit
+exit
+```
+
+## Conectando no novo banco
+### MySQL
+```
+mysql -u lucas -p
+use tarefas;
+```
+### PostgreSQL
+```
+psql -h localhost -U lucas tarefas
+```
+
+## Criando as Tabelas no banco
+
+### MySQL
+```
+CREATE TABLE tb_usuarios(
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  senha VARCHAR(150) NOT NULL
+);
+
+CREATE TABLE tb_tarefas(
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id_usuario INT NOT NULL REFERENCES tb_usuarios(id),
+  descricao VARCHAR(255) NOT NULL,
+  status VARCHAR(50) NOT NULL
+);
+```
+
+### PostgreSQL
+```
+CREATE TABLE tb_usuarios(
+  id SERIAL PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  senha VARCHAR(150) NOT NULL
+);
+
+CREATE TABLE tb_tarefas(
+  id SERIAL PRIMARY KEY,
+  id_usuario INT NOT NULL REFERENCES tb_usuarios(id),
+  descricao VARCHAR(255) NOT NULL,
+  status VARCHAR(50) NOT NULL
+);
+```
