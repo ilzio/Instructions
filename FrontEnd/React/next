@@ -1,0 +1,107 @@
+INSTALL 
+
+	mkdir hello-next
+	cd hello-next
+	npm init -y
+	npm install --save react react-dom next
+	mkdir pages
+
+Then open the package.json file in the hello-next directory and replace scripts with the following:
+
+	"scripts": {
+	  "dev": "next",
+	  "build": "next build",
+	  "start": "next start"
+	}
+
+In pages components have to be created as single files, each page will then become an endpoint ex: 
+
+	-index.js
+	-about.js
+	-...
+
+In order to enable navigation: 
+
+	import Link from 'next/link'
+
+	<Link href="/about">
+                <a>About page</a>
+            </Link>
+	
+*the only requirement for components placed inside <Link /> is that they should accept an
+ onClick prop.
+
+USE MOCK LAYOUT
+
+
+*inside layout 
+
+
+	import Header from './Header';
+
+	const layoutStyle = {
+	    margin: 20,
+	    padding: 20,
+	    border: '1px solid #DDD'
+	};
+
+	const Layout = props => (
+	    <div style={layoutStyle}>
+		<Header />
+		{props.children}
+	    </div>
+	);
+
+	export default Layout;
+
+*ouside, when using it: 
+
+	<Layout>
+		<p>This is the about page</p>
+	</Layout>
+
+
+PASS DATA WITH QUERY STRING:
+
+*pass data in Link href
+
+	const PostLink = props => (
+	  <li>
+	    <Link href={`{post?title=${props.title}`}>
+	      <a>{props.title}</a>
+	    </Link>
+	  </li>
+	)
+
+
+*retrieve with router.query.PROPNAME
+
+	import { useRouter } from 'next/router';
+
+	const router = useRouter();
+
+now access data with 
+
+	router.query.PROPNAME
+
+
+CREATE DYNAMIC PAGES 
+
+	create target page with "[]" ex: [id].js
+
+	call it as:
+
+	    <Link href="/p/[id]" as={`/p/${props.id}`} >
+	      <a>{props.id}</a>
+	    </Link>
+
+	* the href is the actual path and the  "as" is the url that will be displayed
+
+	* the page name between brackets will be the name of the query param received by the page, in this case "id"
+
+
+
+
+
+
+
