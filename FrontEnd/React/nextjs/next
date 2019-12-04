@@ -85,7 +85,7 @@ now access data with
 	router.query.PROPNAME
 
 
-CREATE DYNAMIC PAGES 
+CREATE DYNAMIC PAGES & CLEAN URL
 
 	create target page with "[]" ex: [id].js
 
@@ -95,13 +95,44 @@ CREATE DYNAMIC PAGES
 	      <a>{props.id}</a>
 	    </Link>
 
-	* the href is the actual path and the  "as" is the url that will be displayed
+	* the href is the actual path inside pages directory  as: the path that will be rendered in the browser URL bar.
+
 
 	* the page name between brackets will be the name of the query param received by the page, in this case "id"
 
+FETCHING DATA FROM API
+
+*getInitialProps is an async function that retrieves data before component mounting and rendering
+* first load, it is executed on the server, on second load it is executed on the client. 
+*example :
+
+Index.getInitialProps = async function () {
+  const res = await fetch('https://api.tvmaze.com/search/shows?q=batman');
+  const data = await res.json();
+
+  console.log(`Show data fetched. Count: ${data.length}`);
+  console.log(data)
+  // console.log("ciao")
+  
 
 
+  return {
+    shows: data.map(entry => entry.show)
+  };
+};
+
+getInitialProps receives a context object with the following properties:
+
+pathname - path section of URL
+query - query string section of URL parsed as an object
+asPath - String of the actual path (including the query) shows in the browser
+req - HTTP request object (server only)
+res - HTTP response object (server only)
+err - Error object if any error is encountered during the rendering
 
 
+When we click on a link wrapped with the Next.js <Link> component, the page transition takes place in the browser, without making a request to the server.
+
+If you just visit a post page directly (eg:- http://localhost:3000/p/975) you'll be able to see the message printed on the server but not in the client.
 
 

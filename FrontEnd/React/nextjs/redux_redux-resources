@@ -1,0 +1,59 @@
+*install dependecies
+
+	npm install --save redux react-redux redux-thunk next-redux-wrapper redux-resource redux-devtools-extension 
+
+1) in _app.js
+
+	...
+	...
+	import { Provider } from 'react-redux';
+	import withRedux from 'next-redux-wrapper'
+	import makeStore from '../redux/store';
+
+	class MyApp extends App {
+
+	    render() {
+
+		const { Component, pageProps, store } = this.props
+		return (
+		    <>
+		    <Head >
+		        <title>Titolo</title>
+		    </Head>
+		    <Provider store={store}>
+		        <Component {...pageProps} />
+		    </Provider>
+		    </>
+		)
+	    }
+	}
+
+	export default withRedux(makeStore)(MyApp)
+
+2) redux/store: 
+
+	import { createStore, applyMiddleware } from 'redux';
+	import { composeWithDevTools } from 'redux-devtools-extension';
+	import thunkMiddleware from 'redux-thunk';
+
+	import reducers from './reducers';
+
+	export default () => createStore(
+	    reducers,
+	    undefined, //??????
+	    composeWithDevTools(applyMiddleware(thunkMiddleware))
+	)
+
+
+3) reducers/index.js (using redux resources)
+
+	import { combineReducers } from 'redux';
+	import { resourceReducer } from 'redux-resource';
+
+	export default combineReducers({
+	    entities: combineReducers({
+		myEntities: resourceReducer('myEntities')
+	    }),
+	})
+
+

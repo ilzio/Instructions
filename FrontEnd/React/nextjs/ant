@@ -1,0 +1,55 @@
+ANT FOR NEXT 
+
+install ant 
+
+ npm install antd
+
+*in order for css files to be loaded 
+
+1) install loaders
+
+	npm install --save @zeit/next-css
+	npm install --save @zeit/next-less
+	npm install --save @zeit/next-sass
+
+2) create a next.config.js file in the root folder and populate it as follows:
+
+	const withCSS = require('@zeit/next-css')
+	const withSass = require('@zeit/next-sass')
+	const withLess = require('@zeit/next-less')
+	const isProd = process.env.NODE_ENV === 'production'
+	// fix: prevents error when .less files are required by node
+	if (typeof require !== 'undefined') {
+	    require.extensions['.less'] = file => { }
+	}
+	module.exports = withLess(withSass(withCSS({
+	    lessLoaderOptions: {
+		javascriptEnabled: true
+	    }
+	})))
+
+3) create an _app.js file in the pages folder and import the css there
+
+	import React from 'react'
+	import App from 'next/app'
+	import Head from 'next/head'
+	import 'antd/dist/antd.css';
+
+	class MyApp extends App {
+
+	    render() {
+
+		const { Component, pageProps } = this.props
+		return (
+		    <>
+		    <Head >
+		        <title>Titolo</title>
+		    </Head>
+		    <Component {...pageProps} />
+		    </>
+		)
+	    }
+	}
+
+	export default MyApp
+
