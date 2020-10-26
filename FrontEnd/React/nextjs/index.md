@@ -1,4 +1,4 @@
-##Basic Install 
+Basic Install 
 
 	mkdir hello-next
 	cd hello-next
@@ -14,15 +14,15 @@ Then open the package.json file in the hello-next directory and replace scripts 
 	  "start": "next start"
 	}
 
-##File Based Navigation
+File Based Navigation
 
-In pages components have to be created as single files, each page will then become an endpoint ex: 
+* In pages components have to be created as single files, each page will then become an endpoint ex: 
 
 	-index.js
 	-about.js
 	-...
 
-In order to enable navigation: 
+ * In order to enable navigation: 
 
 	import Link from 'next/link'
 
@@ -32,7 +32,7 @@ In order to enable navigation:
 	
 the only requirement for components placed inside <Link /> is that they should accept an onClick prop.
 
-###Pass data with query string:
+Pass data with query string:
 
 pass data in Link href
 
@@ -47,8 +47,8 @@ pass data in Link href
 
 DYNAMIC PAGES & CLEAN URL
 
-	Create target page / folder whose name is contained in square brackets "[]" ex: [id].js
-	* the name between brackets will be the name of the query param received by the page, in this case "id"
+* Create target page / folder whose name is contained in square brackets "[]" ex: [id].js
+	the name between brackets will be the name of the query param received by the page, in this case "id"
 
 	Link to it as follows:
 
@@ -59,11 +59,11 @@ DYNAMIC PAGES & CLEAN URL
 	      <a>{props.id}</a>
 	    </Link>
 
-	* href = is the actual path inside pages directory  
-	* as = the slug shown in the browser URL bar
+	href = is the actual path inside pages directory  
+	as = the slug shown in the browser URL bar
 	
 
-Inside the page, the query param can be retrieved using the useRouter Hook
+* Inside the page, the query param can be retrieved using the useRouter Hook
 
 	import { useRouter } from 'next/router';
 
@@ -71,11 +71,11 @@ Inside the page, the query param can be retrieved using the useRouter Hook
 	const {propReceived} = router.query // same as const propReceived = router.query.propReceived 
 	
 
-PRE-RENDERING PAGES : STATIC OPTIMIZATION VS SERVER SIDE RENDERING
 
-****SERVER SIDE RENDERING:
 
-getInitialProps is an async function that retrieves data before a component is mounted and rendered, sending the page with the data already populated from the server (retrieve data will be part of the "props".
+SERVER SIDE RENDERING:
+
+* getInitialProps is an async function that retrieves data before a component is mounted and rendered, sending the page with the data already populated from the server (retrieve data will be part of the "props".
 
 	Component.getInitialProps = async function (context) {
 		const res = await fetch('https://api.tvmaze.com/search/shows?q=batman');
@@ -97,11 +97,11 @@ getInitialProps receives as paramenter context object with the following propert
 	err - Error object if any error is encountered during the rendering
 
 *On the first load the function is executed on the server, on second load it is executed on the client. 
-* getInitialProps enables server-side rendering, disabling automatic static optimization
+*getInitialProps enables server-side rendering, disabling automatic static optimization
 
-Since Next.js 9.3 it is recommended to use getStaticProps or getServerSideProps instead of getInitialProps.
+* Since Next.js 9.3 it is recommended to use getStaticProps or getServerSideProps instead of getInitialProps.
 
-*getServerSideProps()
+	* getServerSideProps()
 
 Gets called on every request: use if need to pre-render a page whose data must be fetched at request time. 
 	
@@ -114,9 +114,9 @@ Gets called on every request: use if need to pre-render a page whose data must b
 		}
 	}
 
-****STATIC OPTIMIZATION
+ STATIC OPTIMIZATION
 
-*getStaticProps
+* getStaticProps
 
 pre-renders page at build time using the props returned by getStaticProps.
 
@@ -137,7 +137,7 @@ getStaticProps should return an object with:
     props - [required] object with the props that will be received by the page component 
     revalidate - [optional] amount in seconds after which a page re-generation can occur
 
-*getStaticPatch 
+* getStaticPatch 
 
 If a page has dynamic routes and uses getStaticProps it needs to define a list of paths that have to be rendered to HTML at build time. Next.js will statically pre-render all the paths specified by getStaticPaths.
 
